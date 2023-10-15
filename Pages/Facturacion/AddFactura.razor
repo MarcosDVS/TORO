@@ -1,0 +1,183 @@
+@page "/factura/crear"
+@using TORO.Data.Request;
+@using TORO.Data.Response;
+
+<MenuDisplay />
+<hr>
+<!-- Agregar el diseño de la página aquí -->
+<h3><b>Registro de Factura</b></h3>
+<EditForm Model="facturaRequest">
+    <DataAnnotationsValidator />
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="FechaVenta">Fecha de Venta:</label>
+                <InputDate @bind-Value="facturaRequest.Fecha" id="FechaVenta" class="form-control" />
+            </div>    
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="Cantidad">Nombre/Cliente:</label>
+                <InputText @bind-Value="facturaRequest.Cliente" id="Cantidad" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="AnimalId">ID del Animal:</label>
+                <select class="form-control" @bind="detalleFacturaRequest.AnimalId">
+            <option disabled>Selecciona una ciudad</option>
+            @foreach (var ciudad in Animales)
+            {
+                <option value="@ciudad.Id">
+                    @ciudad.Arete @ciudad.Raza
+                </option>
+            }
+        </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="Cantidad">Cantidad:</label>
+                <InputNumber @bind-Value="detalleFacturaRequest.Cantidad" id="Cantidad" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="PrecioVenta">Precio de Venta:</label>
+                <InputNumber @bind-Value="detalleFacturaRequest.Precio" id="PrecioVenta" class="form-control" />
+            </div>
+        </div>
+        <div class="col-md-2">
+        <button class="btn btn-success d-print-none"
+                type="button" id="button-addon2"
+                @onclick="AgregarAlDetalle">
+            <span class="oi oi-collapse-down"></span>
+        </button>
+    </div>
+    </div>
+
+    
+    @*Disenar los elementos que se cargan a la factura*@
+    <h5>Detalle de la factura</h5>
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="col w-25">
+                    Cantidad
+                </th>
+                <th>Descripcion</th>
+                <th class="col w-25">
+                    Precio
+                </th>
+                <th>
+                    ...
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detalle in facturaRequest.Detalles)
+            {
+                <tr>
+                    <td class="col w-25 text-center">
+                        <InputNumber 
+                            class="form-control" 
+                            @bind-Value="@detalle.Cantidad" />
+                    </td>
+                    <td class="col w-100">
+                        @detalle.Descripcion
+                     </td>
+                    <td class="col w-25">
+                        @detalle.Precio.ToString("C2")
+                     </td>
+                    <td>
+                        <button 
+                            type="button"
+                            class="btn btn-outline-danger"
+                        @onclick="()=>EliminarDetalle(detalle.AnimalId)">
+                    <span 
+                        class="oi oi-trash">
+
+                    </span>
+                    </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="card mb-3 p-3">
+        <h5 class="card-header">Resumen</h5>
+        <div class="card-body">
+            <label>Total:</label>
+            @facturaRequest.SubTotal.ToString("C2")
+            <div class="mb-3">
+                <button 
+                    class="btn btn-success" 
+                    type="submit">
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+
+
+@code {
+    public List<AnimalResponse> Animales { get; set; } = new List<AnimalResponse>();
+    private FacturaRequest facturaRequest = new FacturaRequest();
+    private FacturaDetalleRequest detalleFacturaRequest = new FacturaDetalleRequest();
+    public decimal Precio { get; set; } = 0;
+    public int Cantidad { get; set; } = 1;
+    public int IdAnimal { get; set; } = 0;
+
+   async Task CargarProducto()
+    { 
+        //Llenar la lista de contactos para mostrar al usuario...
+        var r = await animalServices.Consultar("");
+        if (r.Exitoso)
+        {
+            Animales = r.Datos!;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarProducto();
+    }
+
+    void EliminarDetalle(int Id)
+    {
+        var detalle = facturaRequest.Detalles
+        .FirstOrDefault(d => d.AnimalId == Id);
+        if (detalle != null)
+        {
+            facturaRequest.Detalles.Remove(detalle);
+        }
+    }
+    void AgregarAlDetalle()
+    {
+        var r = Animales.FirstOrDefault(p => p.Id ==IdAnimal);
+        var detalle = facturaRequest.Detalles.FirstOrDefault(d => d.AnimalId == IdAnimal);
+        if (detalle != null)
+        {
+            detalle.Cantidad += Cantidad;
+        }
+        else
+        {
+            facturaRequest.Detalles.Add(new()
+                {
+                    AnimalId = IdAnimal,
+                    Descripcion = r!.Arete+" "+r!.Raza ,
+                    Precio = detalleFacturaRequest.Precio,
+                    Cantidad = Cantidad
+                });
+        }
+    }
+}

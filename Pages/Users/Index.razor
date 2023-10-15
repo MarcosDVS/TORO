@@ -1,0 +1,227 @@
+@page "/usuarios"
+
+<MenuDisplay />
+<hr>
+@if (!ShowForm)
+{
+    <div class="row mb-2">
+        <div class="col">
+            <input type="text" @bind="Filtro">
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" @onclick="()=>CargarUsuarios()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                </svg>
+                Buscar
+            </button>
+            <button class="btn btn-success" @onclick="()=>{ShowForm = !ShowForm;}">
+                <span class="oi oi-plus"></span>
+            </button>
+        </div>
+    </div>
+    <hr>
+    <h3><b>Usuarios</b> (@Users.Count)</h3>
+}
+<div class="container">
+    @*Cuando se precio el boton Detalles se muestra mas info sobre el item*@
+    @if (ShowDetails)
+    {
+        <h3>Detalles del Usuario</h3>
+        @if (SelectedUser != null)
+        {
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title"><b>@SelectedUser.Nombre @SelectedUser.Apellido</b></h5>
+                    <p class="card-text">
+                        <b>Usuario:</b> @SelectedUser.Email
+                        <b>Clave:</b> @SelectedUser.Clave
+                    </p>
+                    <button @onclick="()=>Editar(SelectedUser)" class="btn btn-warning">
+                        Editar
+                    </button>
+                    <button @onclick="Close" class="btn btn-danger">
+                        Close
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p>No se ha seleccionado ningún empleado.</p>
+        }
+    }
+
+    @if (ShowForm)
+    {
+        <div class="card">
+        <div class="card-body">
+            <h3 class="card-title"><b>@TituloForm</b></h3>
+            <hr>
+            <EditForm Model="request" OnValidSubmit="Send">
+                <div class="mb-3 input-group">
+                    <label for="Nombre" class="input-group-text">Nombre</label>
+                    <InputText id="Nombre" class="form-control" @bind-Value="@request.Nombre" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="Apellido" class="input-group-text">Apellido</label>
+                    <InputText id="Apellido" class="form-control" @bind-Value="@request.Apellido" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="Usuario" class="input-group-text">Usuario</label>
+                    <InputText id="Usuario" class="form-control" @bind-Value="@request.Email" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="Clave" class="input-group-text">Clave</label>
+                    <InputText id="Clave" class="form-control" @bind-Value="@request.Clave" />
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button @onclick="Cancelar" class="btn btn-secondary">Cancelar</button>
+                </div>
+            </EditForm>
+        </div>
+        </div>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Correo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Users)
+                {
+                    <tr>
+                        <td>@item.Nombre</td>
+                        <td>@item.Apellido</td>
+                        <td>@item.Email</td>
+                        <td>
+                            <button @onclick="()=>MostrarDetalles(item.Id)" 
+                                class="btn btn-primary">
+                                <span class="oi oi-info"></span>
+                                Detalles
+                            </button>
+                            <button @onclick="()=>Seleccionar(item.Id)"
+                                class="btn btn-warning">
+                                <span class="oi oi-pencil"></span>
+                                Editar
+                            </button>
+                            <button @onclick="()=>Eliminar(item)"
+                                class="btn btn-danger">
+                                <span class="oi oi-trash"></span>
+                                Borrar
+                            </button>
+                        </td>
+                    </tr>   
+                }
+            </tbody>
+        </table>
+                
+    }
+</div>
+@code {
+    public string TituloForm => request.Id == 0 ?
+    "Agregar usuario" : "Modificar usuario";
+
+    public bool ShowForm { get; set; } = false;
+    public bool ShowDetails { get; set; } = false;
+    public string Filtro { get; set; } = "";
+    public List<UserResponse> Users { get; set; }
+        = new List<UserResponse>();
+    public UserResponse? SelectedUser { get; set; }
+    public UserRequest request { get; set; } = new UserRequest();
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarUsuarios();
+    }
+
+    void Cancelar()
+    {
+        request = new UserRequest();
+        ShowForm = false;
+    }
+    async Task CargarUsuarios()
+    {
+        var resultado =
+        await userServices.Consultar(Filtro);
+        if (resultado.Exitoso)
+        {
+            Users = resultado.Datos!;
+        }
+    }
+    void Close()
+    {
+        ShowDetails = false;
+    }
+    public async Task MostrarDetalles(int userId)
+    {
+        ShowForm = false;
+        ShowDetails = true;
+        SelectedUser = Users.FirstOrDefault(u => u.Id == userId);
+    }
+    public void Editar(UserResponse user)
+    {
+        ShowForm = true;
+        ShowDetails = false;
+        request = new UserRequest
+            {
+                Id = user.Id,
+                Nombre = user.Nombre,
+                Apellido = user.Apellido,
+                Email = user.Email,
+                Clave = user.Clave
+            };
+    }
+    public async Task Send()
+    {
+        if (request.Id == 0)
+        {
+            //Debo registrar el contacto..
+            var r = await userServices.Crear(request);
+            if (r.Exitoso)
+            {
+                Cancelar();
+                await CargarUsuarios();
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            //Debo solicitar modificar el contacto...
+            var r = await userServices.Modificar(request);
+            if (r.Exitoso)
+            {
+                Cancelar();
+                await CargarUsuarios();
+                StateHasChanged();
+            }
+        }
+    }
+    public async Task Eliminar(UserResponse user)
+    {
+        var resultado = await userServices.Eliminar(user.ToRequest());
+        if (resultado.Exitoso)
+        {
+            await CargarUsuarios();
+            StateHasChanged();
+        }
+    }
+
+    public void Seleccionar(int Id)
+    {
+        ShowForm = true;
+        request = Users
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new UserRequest();
+    }
+    
+}

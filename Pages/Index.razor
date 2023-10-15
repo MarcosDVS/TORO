@@ -1,0 +1,34 @@
+﻿@using TORO.Data.Model;
+@inject IJSRuntime js
+
+@page "/"
+
+<PageTitle>Index</PageTitle>
+
+<PageTitle>TORO</PageTitle>
+
+<MenuDisplay />
+
+<h1>Hello, Guest!</h1>
+<br>
+<br>
+<button type="button" class="btn btn-primary" @onclick="CrearUsuario">Log In</button>
+<br>
+<br>
+<br>
+welcome to your new app
+
+<SurveyPrompt Title="How is blazor working for you" />
+
+<br />
+<br />
+<button class="btn btn-outline-primary" >Display Greeting Alert</button>
+    
+
+@code 
+{
+    void CrearUsuario()
+    {
+        urlHelper.NavigateTo("/login");
+    }
+}

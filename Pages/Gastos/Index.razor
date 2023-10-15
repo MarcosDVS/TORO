@@ -1,0 +1,193 @@
+@page "/gasto"
+
+<MenuDisplay />
+<hr>
+@if (!ShowForm)
+{
+    <div class="row mb-2">
+        <div class="col">
+            <input type="text" @bind="Filtro">
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" @onclick="()=>CargarInfo()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                </svg>
+                Buscar
+            </button>
+            <button class="btn btn-success" @onclick="()=>{ShowForm = !ShowForm;}">
+                <span class="oi oi-plus"></span>
+            </button>
+        </div>
+    </div>
+    <hr />
+    <h3><b>Gastos</b> (@Gastos.Count)</h3>
+    <h5><b>Gastos Totales</b> (@Gastos.Sum(c=>c.CostoTotal))</h5>
+}
+<div class="container">
+
+    @if (ShowForm)
+    {
+        <div class="card">
+    <div class="card-body">
+        <h3 class="card-title"><b>@TituloForm</b></h3>
+        <hr>
+        <EditForm Model="request" OnValidSubmit="Send">
+            <div class="mb-3 input-group">
+                <label for="Fecha" class="input-group-text">Fecha</label>
+                <InputDate id="Fecha" class="form-control" @bind-Value="@request.Fecha" />
+            </div>
+            <div class="mb-3 input-group">
+                <label for="Detalle" class="input-group-text">Detalle</label>
+                <InputText id="Detalle" class="form-control" @bind-Value="@request.Detalle" />
+            </div>
+            <div class="mb-3 input-group">
+                <label for="Cantidad" class="input-group-text">Cantidad</label>
+                <InputNumber id="Cantidad" class="form-control" @bind-Value="@request.Cantidad" />
+            </div>
+            <div class="mb-3 input-group">
+                <label for="Costo" class="input-group-text">Costo</label>
+                <InputNumber id="Costo" class="form-control" @bind-Value="@request.Costo" />
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button @onclick="Cancelar" class="btn btn-secondary">Cancelar</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Detalle</th>
+                    <th>Cantidad</th>
+                    <th>Costo</th>
+                    <th>Costo/Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Gastos)
+                {
+                    <tr>
+                        <td>@item.Fecha</td>
+                        <td>@item.Detalle</td>
+                        <td>@item.Cantidad</td>
+                        <td>@item.Costo</td>
+                        <td>@item.CostoTotal</td>
+                        <td>
+                            <button @onclick="()=>Seleccionar(item.Id)"
+                                class="btn btn-warning">
+                                <span class="oi oi-pencil"></span>
+                                Editar
+                            </button>
+                            <button @onclick="()=>Eliminar(item)"
+                                class="btn btn-danger">
+                                <span class="oi oi-trash"></span>
+                                Borrar
+                            </button>
+                        </td>
+                    </tr>   
+                }
+            </tbody>
+        </table>
+                
+    }
+</div>
+@code {
+    public string TituloForm => request.Id == 0 ?
+    "Agregar gasto" : "Modificar gasto";
+
+    public bool ShowForm { get; set; } = false;
+    public bool ShowDetails { get; set; } = false;
+    public string Filtro { get; set; } = "";
+    public List<GastoResponse> Gastos { get; set; } = new List<GastoResponse>();
+    public GastoResponse? SelectedUser { get; set; }
+    public GastoRequest request { get; set; } = new GastoRequest();
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarInfo();
+    }
+
+    void Cancelar()
+    {
+        request = new GastoRequest();
+        ShowForm = false;
+    }
+    async Task CargarInfo()
+    {
+        var resultado =
+        await gastoServices.Consultar(Filtro);
+        if (resultado.Exitoso)
+        {
+            Gastos = resultado.Datos!;
+        }
+    }
+    void Close()
+    {
+        ShowDetails = false;
+    }
+    public void Editar(GastoResponse user)
+    {
+        ShowForm = true;
+        request = new GastoRequest
+            {
+                Id = user.Id,
+                Detalle = user.Detalle,
+                Cantidad = user.Cantidad,
+                Costo = user.Costo,
+                CostoTotal = user.CostoTotal,
+                Fecha = user.Fecha
+            };
+    }
+    public async Task Send()
+    {
+        if (request.Id == 0)
+        {
+            //Debo registrar el contacto..
+            var r = await gastoServices.Crear(request);
+            if (r.Exitoso)
+            {
+                Cancelar();
+                await CargarInfo();
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            //Debo solicitar modificar el contacto...
+            var r = await gastoServices.Modificar(request);
+            if (r.Exitoso)
+            {
+                Cancelar();
+                await CargarInfo();
+                StateHasChanged();
+            }
+        }
+    }
+    public async Task Eliminar(GastoResponse user)
+    {
+        var resultado = await gastoServices.Eliminar(user.ToRequest());
+        if (resultado.Exitoso)
+        {
+            await CargarInfo();
+            StateHasChanged();
+        }
+    }
+
+    public void Seleccionar(int Id)
+    {
+        ShowForm = true;
+        request = Gastos
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new GastoRequest();
+    }
+    
+}

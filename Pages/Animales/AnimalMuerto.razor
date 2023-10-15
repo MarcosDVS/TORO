@@ -1,0 +1,179 @@
+﻿@page "/animalM"
+
+<MenuDisplay />
+<hr>
+@if (!ShowForm)
+{
+    <div class="row mb-2">
+        <div class="col">
+            <input type="text" @bind="Filtro">
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" @onclick="()=>CargarInfo()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                </svg>
+                Buscar</button>
+        </div>
+    </div>
+    <hr>
+    <h3><b>Bovinos</b> (@Animales.Count(c=>c.Muerto==true))</h3>
+    <h5><b>Perdidas en bovinos</b> (@Animales.Where(c => c.Muerto).Sum(c => c.CostoCompra))</h5>
+}
+
+<div class="container">
+    @if (ShowForm)
+    {
+        <div class="card">
+        <div class="card-body">
+            <h3 class="card-title"><b>@TituloForm</b></h3>
+            <hr>
+
+            <EditForm Model="request" OnValidSubmit="Send">
+                <div class="mb-3 input-group">
+                    <label for="Arete" class="input-group-text">Arete</label>
+                    <InputText id="Arete" class="form-control" @bind-Value="@request.Arete" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="Raza" class="input-group-text">Raza</label>
+                    <InputText id="Raza" class="form-control" @bind-Value="@request.Raza" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="Sexo" class="input-group-text">Sexo</label>
+                    <InputText id="Sexo" class="form-control" @bind-Value="@request.Sexo" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="CostoCompra" class="input-group-text">Costo/Compra</label>
+                    <InputNumber id="CostoCompra" class="form-control" @bind-Value="@request.CostoCompra" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="FechaNacimiento" class="input-group-text">Fecha/Nacimiento</label>
+                    <InputDate id="FechaNacimiento" class="form-control" @bind-Value="@request.FechaNacimiento" />
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button @onclick="Cancelar" class="btn btn-secondary">Cancelar</button>
+                </div>
+            </EditForm>
+        </div>
+        </div>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Arete</th>
+                    <th>Raza</th>
+                    <th>Sexo</th>
+                    <th>Costo/Compra</th>
+                    <th>Fecha/Nacimiento</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Animales)
+                {
+                    @if(item.Muerto==true)
+                    {
+                            <tr>
+                            <td>@item.Arete</td>
+                            <td>@item.Raza</td>
+                            <td>@item.Sexo</td>
+                            <td>@item.CostoCompra</td>
+                            <td>@item.FechaNacimiento</td>
+                            <td>
+                                <button @onclick="()=>Seleccionar(item.Id)"
+                                    class="btn btn-warning">
+                                    <span class="oi oi-pencil"></span>
+                                    Editar
+                                </button>
+                                <button @onclick="()=>Eliminar(item)"
+                                    class="btn btn-danger">
+                                    <span class="oi oi-trash"></span>
+                                    Borrar
+                                </button>
+                            </td>
+                        </tr>   
+                    }
+                }
+            </tbody>
+        </table>
+    }
+    
+</div>    
+@code {
+    public string TituloForm => request.Id == 0 ?
+    "Agregar bovino" : "Modificar bovino";
+    
+    public bool ShowForm { get; set; } = false;
+    public string Filtro { get; set; } = "";
+    public List<AnimalResponse> Animales { get; set; } = new List<AnimalResponse>();
+    public AnimalResponse SelectCar { get; set; } = new AnimalResponse();
+    public AnimalRequest request { get; set; } = new AnimalRequest();
+    
+    void Cancelar()
+    {
+        request = new AnimalRequest();
+        ShowForm = false;
+    }
+    async Task CargarInfo()
+    {
+        var resultado = await animalServices.Consultar(Filtro);
+        if (resultado.Exitoso)
+            Animales = resultado.Datos!;
+    }
+    protected async override Task OnInitializedAsync()
+    {
+        await Consultar();
+    }
+    public async Task<bool> Consultar()
+    {
+        var response = await animalServices.Consultar(Filtro);
+        if(response.Exitoso)
+            Animales = response.Datos!;
+        return true;
+    }
+    public async Task Eliminar(AnimalResponse user)
+    {
+        var resultado = await animalServices.Eliminar(user.ToRequest());
+        if (resultado.Exitoso)
+        {
+            await CargarInfo();
+            StateHasChanged();
+        }
+    }
+    public void Seleccionar(int Id)
+    {
+        ShowForm = true;
+        request = Animales
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new AnimalRequest();
+    }
+    public async Task Send()
+    {
+        if (request.Id == 0 )
+        {
+            //Debo registrar el contacto..
+            var r = await animalServices.Registrar(request);
+            if (r.Exitoso)
+            {
+                Cancelar();
+                await CargarInfo();
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            //Debo solicitar modificar el contacto...
+            var r = await animalServices.Modificar(request);
+            if (r.Exitoso)
+            {
+                Cancelar();
+                await CargarInfo();
+                StateHasChanged();
+            }
+        }
+    }
+}
