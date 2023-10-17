@@ -65,10 +65,30 @@ namespace TORO.Data.Services;
             };
         }
     }
+    public async Task<Result> Eliminar(FacturaRequest request)
+    {
+        try
+        {
+            var contacto = await dbContext.Facturas
+                .FirstOrDefaultAsync(c => c.Id == request.Id);
+            if (contacto == null)
+                return new Result() { Mensaje = "No se encontro el usuario", Exitoso = false };
+
+            dbContext.Facturas.Remove(contacto);
+            await dbContext.SaveChangesAsync();
+            return new Result() { Mensaje = "Ok", Exitoso = true };
+        }
+        catch (Exception E)
+        {
+
+            return new Result() { Mensaje = E.Message, Exitoso = false };
+        }
+    }
 }
 
     public interface IFacturaServices
     {
         Task<Result<List<FacturaRespose>>> Consultar();
         Task<Result<FacturaRespose>> Crear(FacturaRequest request);
+         Task<Result> Eliminar(FacturaRequest request);
     }

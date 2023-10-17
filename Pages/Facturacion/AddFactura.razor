@@ -6,14 +6,14 @@
 <hr>
 <!-- Agregar el diseño de la página aquí -->
 <h3><b>Registro de Factura</b></h3>
-<EditForm Model="facturaRequest">
+<EditForm Model="facturaRequest" OnValidSubmit="Send">
     <DataAnnotationsValidator />
 
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
                 <label for="FechaVenta">Fecha de Venta:</label>
-                <InputDate @bind-Value="facturaRequest.Fecha" id="FechaVenta" class="form-control" />
+                <InputDate @bind-Value="facturaRequest.Fecha" id="Fecha" class="form-control" />
             </div>    
         </div>
         <div class="col-md-6">
@@ -28,15 +28,19 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="AnimalId">ID del Animal:</label>
-                <select class="form-control" @bind="detalleFacturaRequest.AnimalId">
-            <option disabled>Selecciona una ciudad</option>
-            @foreach (var ciudad in Animales)
-            {
-                <option value="@ciudad.Id">
-                    @ciudad.Arete @ciudad.Raza
-                </option>
-            }
-        </select>
+                <select class="form-control" @bind="IdAnimal">
+                    <option disabled>Selecciona una ciudad</option>
+                    @foreach (var animal in Animales)
+                    {
+                        @if(!animal.Muerto)
+                        {
+                            <option value="@animal.Id">
+                                @animal.Arete @animal.Raza @animal.Sexo
+                            </option>
+                        }
+                    }
+                </select>
+
             </div>
         </div>
         <div class="col-md-6">
@@ -55,9 +59,8 @@
             </div>
         </div>
         <div class="col-md-2">
-        <button class="btn btn-success d-print-none"
-                type="button" id="button-addon2"
-                @onclick="AgregarAlDetalle">
+        <button class="btn btn-success d-print-none" type="button"
+            @onclick="AgregarAlDetalle">
             <span class="oi oi-collapse-down"></span>
         </button>
     </div>
@@ -130,6 +133,8 @@
 
 
 @code {
+    public string? Message { get; set; } = null;
+    public string Nombre { get; set; } = string.Empty;
     public List<AnimalResponse> Animales { get; set; } = new List<AnimalResponse>();
     private FacturaRequest facturaRequest = new FacturaRequest();
     private FacturaDetalleRequest detalleFacturaRequest = new FacturaDetalleRequest();
@@ -163,7 +168,7 @@
     }
     void AgregarAlDetalle()
     {
-        var r = Animales.FirstOrDefault(p => p.Id ==IdAnimal);
+        var r = Animales.FirstOrDefault(p => p.Id == IdAnimal);
         var detalle = facturaRequest.Detalles.FirstOrDefault(d => d.AnimalId == IdAnimal);
         if (detalle != null)
         {
@@ -174,10 +179,24 @@
             facturaRequest.Detalles.Add(new()
                 {
                     AnimalId = IdAnimal,
-                    Descripcion = r!.Arete+" "+r!.Raza ,
+                    Descripcion = r!.Arete + " " + r!.Raza+" "+r!.Sexo,
                     Precio = detalleFacturaRequest.Precio,
                     Cantidad = Cantidad
                 });
         }
+    }
+
+    async Task Send()
+    {
+        
+        var result = await
+        facturaServices.Crear(facturaRequest);
+        if (result.Exitoso)
+        {
+            urlHelper.NavigateTo("/factura");
+            Message = result.Mensaje;
+        }
+        else Message = result.Mensaje;
+
     }
 }

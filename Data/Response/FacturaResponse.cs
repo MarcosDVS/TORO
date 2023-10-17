@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using TORO.Data.Request;
 
 namespace TORO.Data.Response;
 
@@ -14,6 +15,25 @@ public class FacturaRespose
         Detalles.Sum(d => d.SubTotal) //Verdadero
         :
         0;//Falso
+
+    public FacturaRequest ToRequest()
+{
+    return new FacturaRequest
+    {
+        Id = Id,
+        Cliente = Cliente,
+        Fecha = Fecha,
+        Detalles = Detalles.Select(d => new FacturaDetalleRequest
+        {
+            Id = d.Id,
+            AnimalId = d.Animal.Id, // Asegúrate de que esto sea correcto
+            Descripcion = d.Animal.Arete + " " + d.Animal.Raza, // Asegúrate de que esto sea correcto
+            Cantidad = d.Cantidad,
+            Precio = d.Precio
+        }).ToList()
+    };
+}
+
 }
 
 public class FacturaDetalleResponse

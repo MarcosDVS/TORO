@@ -1,25 +1,57 @@
 ﻿@page "/factura"
+@using TORO.Data.Response;
 
 <MenuDisplay />
 <hr>
 
-    <div class="row mb-2">
-        <div class="col">
-            <input type="text">
-        </div>
-        <div class="col">
-            <button class="btn btn-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-                Buscar</button>
-            <button class="btn btn-success" @onclick="CrearFactura">
-                <span class="oi oi-plus"></span>
-            </button>
-        </div>
+<div class="row">
+    <div class="col">
+        <h3 class="d-print-none"><b>Módulo de facturación</b></h3>
+        <h3 class="d-none d-print-block">Reporte de facturaciones</h3>
     </div>
-    <hr>
-    <h3><b>Facturas</b></h3>
+    <div class="col">
+        <button 
+            class="btn btn-outline-success" 
+            @onclick='CrearFactura'>
+            <span class="oi oi-plus"></span>
+        </button>
+    </div>
+</div>
+@if (Facturas != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Monto</th>
+                <th scope="col">Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var f in Facturas)
+            {
+                <tr>
+                    <th scope="row">@f.Id</th>
+                    <td>@f.Cliente</td>
+                    <td>@f.SubTotal.ToString("N2")</td>
+                    <td>@f.Fecha</td>
+                    <td>
+                            <button class="btn btn-primary">
+                                <span class="oi oi-info"></span>
+                                Detalles
+                            </button>
+                            <button @onclick="()=>Eliminar(f)"
+                                class="btn btn-danger">
+                                <span class="oi oi-trash"></span>
+                                Borrar
+                            </button>
+                        </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code
 {
@@ -28,4 +60,28 @@
         urlHelper.NavigateTo("/factura/crear");
     }
     
+     async Task Consultar()
+    {
+        var resultado = await facturaServices.Consultar();
+        if (resultado.Exitoso)
+        {
+            Facturas = resultado.Datos??new List<FacturaRespose>();
+        }
+        StateHasChanged();
+    }
+    public List<FacturaRespose> Facturas { get; set; } = new List<FacturaRespose>();
+    protected override async Task OnInitializedAsync()
+    {
+        await Consultar();
+    }
+
+    public async Task Eliminar(FacturaRespose user)
+    {
+        var resultado = await facturaServices.Eliminar(user.ToRequest());
+        if (resultado.Exitoso)
+        {
+            await Consultar();
+            StateHasChanged();
+        }
+    }
 }
