@@ -32,7 +32,7 @@
                     <option disabled>Selecciona una ciudad</option>
                     @foreach (var animal in Animales)
                     {
-                        @if(!animal.Muerto)
+                        @if(!animal.Muerto && !animal.Vendido)
                         {
                             <option value="@animal.Id">
                                 @animal.Arete @animal.Raza @animal.Sexo
@@ -138,6 +138,7 @@
     public List<AnimalResponse> Animales { get; set; } = new List<AnimalResponse>();
     private FacturaRequest facturaRequest = new FacturaRequest();
     private FacturaDetalleRequest detalleFacturaRequest = new FacturaDetalleRequest();
+    public AnimalResponse AnimalEnConfirmacion { get; set; } = new AnimalResponse();
     public decimal Precio { get; set; } = 0;
     public int Cantidad { get; set; } = 1;
     public int IdAnimal { get; set; } = 0;
@@ -188,15 +189,30 @@
 
     async Task Send()
     {
-        
-        var result = await
-        facturaServices.Crear(facturaRequest);
+        var result = await facturaServices.Crear(facturaRequest);
         if (result.Exitoso)
         {
-            urlHelper.NavigateTo("/factura");
+            // Obtener los IDs de los animales en la factura
+            var animalIds = facturaRequest.Detalles.Select(d => d.AnimalId).ToList();
+
+            // Llamar al servicio para marcar los animales como vendidos
+            var actualizacionExitosa = await animalServices.MarcarAnimalesComoVendidos(animalIds);
+
+            if (actualizacionExitosa)
+            {
+                urlHelper.NavigateTo("/factura");
+                Message = result.Mensaje;
+            }
+            else
+            {
+                Message = "Error al marcar los animales como vendidos.";
+            }
+        }
+        else
+        {
             Message = result.Mensaje;
         }
-        else Message = result.Mensaje;
 
     }
+    
 }

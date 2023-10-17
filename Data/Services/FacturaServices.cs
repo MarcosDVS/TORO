@@ -84,6 +84,7 @@ namespace TORO.Data.Services;
             return new Result() { Mensaje = E.Message, Exitoso = false };
         }
     }
+
 }
 
     public interface IFacturaServices

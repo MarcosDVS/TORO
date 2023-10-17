@@ -99,7 +99,7 @@
             <tbody>
                 @foreach (var item in Animales)
                 {
-                    @if(item.Muerto==false)
+                    @if(!item.Muerto && !item.Vendido)
                     {
                             <tr>
                             <td>@item.Arete</td>

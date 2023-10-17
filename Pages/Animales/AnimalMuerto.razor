@@ -50,6 +50,10 @@
                     <label for="FechaNacimiento" class="input-group-text">Fecha/Nacimiento</label>
                     <InputDate id="FechaNacimiento" class="form-control" @bind-Value="@request.FechaNacimiento" />
                 </div>
+                <div class="mb-3 input-group">
+                    <label for="FechaNacimiento" class="input-group-text">Fecha/Muerte</label>
+                    <InputDate id="FechaNacimiento" class="form-control" @bind-Value="@request.FechaMuerte" />
+                </div>
                 
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">Guardar</button>
@@ -69,6 +73,7 @@
                     <th>Sexo</th>
                     <th>Costo/Compra</th>
                     <th>Fecha/Nacimiento</th>
+                    <th>Fecha/Muerte</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,6 +87,7 @@
                             <td>@item.Sexo</td>
                             <td>@item.CostoCompra</td>
                             <td>@item.FechaNacimiento</td>
+                            <td>@item.FechaMuerte</td>
                             <td>
                                 <button @onclick="()=>Seleccionar(item.Id)"
                                     class="btn btn-warning">

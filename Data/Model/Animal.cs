@@ -15,7 +15,9 @@ public class Animal
     [Column(TypeName ="decimal(18,2)")]
     public decimal? CostoCompra { get; set; }
     public DateTime FechaNacimiento { get; set; } = DateTime.Now;
+    public DateTime FechaMuerte { get; set; } = DateTime.Now;
     public bool Muerto { get; set; } = false;
+    public bool Vendido { get; set; } = false;
 
     public static Animal Crear(AnimalRequest item) => new()
     {
@@ -24,7 +26,9 @@ public class Animal
         Sexo = item.Sexo,
         CostoCompra = item.CostoCompra,
         FechaNacimiento = item.FechaNacimiento,
-        Muerto = item.Muerto
+        Muerto = item.Muerto,
+        FechaMuerte = item.FechaMuerte,
+        Vendido = item.Vendido
     };
     public bool Modificar(AnimalRequest user)
     {
@@ -34,6 +38,7 @@ public class Animal
         if (Sexo != user.Sexo) Sexo = user.Sexo; cambio = true;
         if (CostoCompra != user.CostoCompra) CostoCompra = user.CostoCompra; cambio = true;
         if (FechaNacimiento != user.FechaNacimiento) FechaNacimiento = user.FechaNacimiento; cambio = true;
+        if (FechaMuerte != user.FechaMuerte) FechaMuerte = user.FechaMuerte; cambio = true;
 
         return cambio;
     }
@@ -46,6 +51,8 @@ public class Animal
         Sexo = Sexo,
         CostoCompra = CostoCompra,
         FechaNacimiento = FechaNacimiento,
-        Muerto = Muerto
+        Muerto = Muerto,
+        FechaMuerte = FechaMuerte,
+        Vendido = Vendido
     };
 }

@@ -37,16 +37,15 @@
                     <td>@f.SubTotal.ToString("N2")</td>
                     <td>@f.Fecha</td>
                     <td>
-                            <button class="btn btn-primary">
-                                <span class="oi oi-info"></span>
-                                Detalles
-                            </button>
-                            <button @onclick="()=>Eliminar(f)"
-                                class="btn btn-danger">
-                                <span class="oi oi-trash"></span>
-                                Borrar
-                            </button>
-                        </td>
+                        <button class="btn btn-primary">
+                            <span class="oi oi-info"></span>
+                            Detalles
+                        </button>
+                        <button @onclick="()=>Eliminar(f)" class="btn btn-danger">
+                            <span class="oi oi-trash"></span>
+                            Borrar
+                        </button>
+                    </td>
                 </tr>
             }
         </tbody>

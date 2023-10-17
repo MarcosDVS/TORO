@@ -13,6 +13,7 @@ public interface IAnimalServices
     Task<Result<int>> Registrar(AnimalRequest datos);
     Task<Result> Eliminar(AnimalRequest request);
     Task<Result> Modificar(AnimalRequest request);
+    Task<bool> MarcarAnimalesComoVendidos(List<int> animalIds);
 }
 public class AnimalServices : IAnimalServices
 {
@@ -45,7 +46,7 @@ public class AnimalServices : IAnimalServices
             {
                 var usuarios = await dbContext.Animals
                     .Where(u =>
-                        (u.Arete + " " + u.Raza + " " + u.Sexo + " " + u.FechaNacimiento)
+                        (u.Arete + " " + u.Raza + " " + u.Sexo + " " + u.FechaNacimiento+" "+u.FechaMuerte)
                         .ToLower()
                         .Contains(filtro.ToLower()
                         )
@@ -69,25 +70,26 @@ public class AnimalServices : IAnimalServices
             }
     }
    public async Task<Result> MarcarComoMuerto(int animalId)
-{
-    try
     {
-        var animal = await dbContext.Animals
-            .FirstOrDefaultAsync(c => c.Id == animalId);
+        try
+        {
+            var animal = await dbContext.Animals
+                .FirstOrDefaultAsync(c => c.Id == animalId);
 
-        if (animal == null)
-            return new Result() { Mensaje = "No se encontró el animal", Exitoso = false };
+            if (animal == null)
+                return new Result() { Mensaje = "No se encontró el animal", Exitoso = false };
 
-        animal.Muerto = true;
-        await dbContext.SaveChangesAsync();
+            animal.Muerto = true;
+            animal.FechaMuerte = DateTime.Now;
+            await dbContext.SaveChangesAsync();
 
-        return new Result() { Mensaje = "Ok", Exitoso = true };
+            return new Result() { Mensaje = "Ok", Exitoso = true };
+        }
+        catch (Exception E)
+        {
+            return new Result() { Mensaje = E.Message, Exitoso = false };
+        }
     }
-    catch (Exception E)
-    {
-        return new Result() { Mensaje = E.Message, Exitoso = false };
-    }
-}
 
 public async Task<Result> Eliminar(AnimalRequest request)
 {
@@ -116,7 +118,7 @@ public async Task<Result> Modificar(AnimalRequest request)
         var user = await dbContext.Animals
             .FirstOrDefaultAsync(c => c.Id == request.Id);
         if (user == null)
-            return new Result() { Mensaje = "No se encontro el usuario", Exitoso = false };
+            return new Result() { Mensaje = "No se encontro", Exitoso = false };
 
         if (user.Modificar(request))
             await dbContext.SaveChangesAsync();
@@ -129,4 +131,25 @@ public async Task<Result> Modificar(AnimalRequest request)
         return new Result() { Mensaje = E.Message, Exitoso = false };
     }
 }
+    public async Task<bool> MarcarAnimalesComoVendidos(List<int> animalIds)
+    {
+        try
+        {
+            var animales = await dbContext.Animals
+                .Where(a => animalIds.Contains(a.Id))
+                .ToListAsync();
+
+            foreach (var animal in animales)
+            {
+                animal.Vendido = true;
+            }
+
+            await dbContext.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 }
