@@ -73,8 +73,14 @@
                             <h5 class="modal-title">¿Estas seguro?</h5>
                         </div>
                         <div class="modal-footer">
-                            <button @onclick="ConfirmarMuerte" class="btn btn-success">Sí</button>
-                            <button @onclick="CancelarConfirmacion" class="btn btn-danger">No</button>
+                            <button class="btn btn-success"
+                                @onclick="ConfirmarMuerte" >
+                                <span class="oi oi-check"></span> Sí
+                            </button>
+                            <button class="btn btn-danger"
+                                @onclick="CancelarConfirmacion">
+                                <span class="oi oi-x"></span> No
+                            </button>
                         </div>
                     </div>
                 </div>
