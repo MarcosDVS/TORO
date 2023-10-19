@@ -32,10 +32,10 @@
                 <tr>
                     <td>@detalle.Cantidad</td>
                     <td>@detalle.Animal.Arete @detalle.Animal.Raza @detalle.Animal.Sexo</td>
-                    <td>@detalle.Precio.ToString("N2")</td>
+                    <td>$@detalle.Precio.ToString("N2")</td>
                 </tr>
             }
-            <h5>Total: @FacturaDetalles.Sum(c=>c.Precio).ToString("N2")</h5>
+            <h5>Total: $@FacturaDetalles.Sum(c=>c.Precio).ToString("N2")</h5>
             
         </tbody>
     </table>
@@ -70,7 +70,7 @@ else if(Facturas != null)
                 <tr>
                     <th scope="row">@factura.Id</th>
                     <td>@factura.Cliente</td>
-                    <td>@factura.SubTotal.ToString("N2")</td>
+                    <td>$@factura.SubTotal.ToString("N2")</td>
                     <td>@factura.Fecha</td>
                     <td>
                         <button class="btn btn-primary" @onclick="() => MostrarDetalles(factura)">

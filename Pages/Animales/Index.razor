@@ -21,7 +21,7 @@
     </div>
     <hr>
     <h3><b>Bovinos</b> (@Animales.Count(c=>c.Muerto==false))</h3>
-    <h5><b>Inversión en bovinos</b> $(@Animales.Where(c => !c.Muerto).Sum(c => c.CostoCompra).ToString("N2"))</h5>
+    <h5><b>Inversión en bovinos</b> ($@Animales.Where(c => !c.Muerto).Sum(c => c.CostoCompra).ToString("N2"))</h5>
 }
 
 <div class="container">
