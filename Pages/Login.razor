@@ -49,4 +49,18 @@
     {
         urlHelper.NavigateTo("/usuario/crear");
     }
+
+    private async Task IniciarSesion()
+    {
+        var resultado = await userServices.Login(model.UserName, model.Password);
+        if (resultado.Exitoso)
+        {
+            // El inicio de sesión fue exitoso, puedes redirigir al usuario a la página "/animal" u otra página.
+            urlHelper.NavigateTo("/animal");
+        }
+        else
+        {
+            // Mostrar un mensaje de error de inicio de sesión si es necesario.
+        }
+    }
 }
