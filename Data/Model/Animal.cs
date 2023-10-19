@@ -13,7 +13,7 @@ public class Animal
     public string Raza { get; set; } = null!;
     public string Sexo { get; set; } = null!;
     [Column(TypeName ="decimal(18,2)")]
-    public decimal? CostoCompra { get; set; }
+    public decimal CostoCompra { get; set; }
     public DateTime FechaNacimiento { get; set; } = DateTime.Now;
     public DateTime FechaMuerte { get; set; } = DateTime.Now;
     public bool Muerto { get; set; } = false;

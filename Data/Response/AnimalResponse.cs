@@ -9,7 +9,7 @@ public class AnimalResponse
     public string Arete { get; set; } = null!;
     public string Raza { get; set; } = null!;
     public string Sexo { get; set; } = null!;
-    public decimal? CostoCompra { get; set; }
+    public decimal CostoCompra { get; set; }
     public DateTime FechaNacimiento { get; set; }
     public DateTime FechaMuerte { get; set; } = DateTime.Now;
     public bool Muerto { get; set; } = false;
