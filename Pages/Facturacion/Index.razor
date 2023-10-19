@@ -4,21 +4,57 @@
 <MenuDisplay />
 <hr>
 
-<div class="row">
-    <div class="col">
-        <h3 class="d-print-none"><b>Módulo de facturación</b></h3>
-        <h3 class="d-none d-print-block">Reporte de facturaciones</h3>
-    </div>
-    <div class="col">
-        <button 
-            class="btn btn-outline-success" 
-            @onclick='CrearFactura'>
-            <span class="oi oi-plus"></span>
-        </button>
-    </div>
-</div>
-@if (Facturas != null)
+@if(ShowDetails)
 {
+    <div class="row">
+        <div class="col">
+            <h3 class="card-title"><b>@TituloForm</b></h3>
+        </div>
+        <div class="col">
+            <button class="btn btn-danger"
+                @onclick="Back">
+                <span class="oi oi-arrow-left"></span>
+            </button>
+        </div>
+    </div>
+    <!-- Mostrar detalles de la factura seleccionada -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Cantidad</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detalle in FacturaDetalles)
+            {
+                <tr>
+                    <td>@detalle.Cantidad</td>
+                    <td>@detalle.Animal.Arete @detalle.Animal.Raza @detalle.Animal.Sexo</td>
+                    <td>@detalle.Precio.ToString("N2")</td>
+                </tr>
+            }
+            <h5>Total: @FacturaDetalles.Sum(c=>c.Precio).ToString("N2")</h5>
+            
+        </tbody>
+    </table>
+}
+else if(Facturas != null)
+{
+    <div class="row">
+        <div class="col">
+            <h3 class="card-title"><b>@TituloForm</b></h3>
+        </div>
+        <div class="col">
+            <button 
+                class="btn btn-outline-success" 
+                @onclick='CrearFactura'>
+                <span class="oi oi-plus"></span>
+            </button>
+        </div>
+    </div>
+    <!-- Mostrar la lista de facturas -->
     <table class="table">
         <thead>
             <tr>
@@ -29,19 +65,19 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var f in Facturas)
+            @foreach (var factura in Facturas)
             {
                 <tr>
-                    <th scope="row">@f.Id</th>
-                    <td>@f.Cliente</td>
-                    <td>@f.SubTotal.ToString("N2")</td>
-                    <td>@f.Fecha</td>
+                    <th scope="row">@factura.Id</th>
+                    <td>@factura.Cliente</td>
+                    <td>@factura.SubTotal.ToString("N2")</td>
+                    <td>@factura.Fecha</td>
                     <td>
-                        <button class="btn btn-primary">
+                        <button class="btn btn-primary" @onclick="() => MostrarDetalles(factura)">
                             <span class="oi oi-info"></span>
                             Detalles
                         </button>
-                        <button @onclick="()=>Eliminar(f)" class="btn btn-danger">
+                        <button @onclick="() => Eliminar(factura)" class="btn btn-danger">
                             <span class="oi oi-trash"></span>
                             Borrar
                         </button>
@@ -54,11 +90,21 @@
 
 @code
 {
+    public string TituloForm => ShowDetails == false ?
+    "Módulo de facturación" : "Reporte de facturaciones";
+    public bool ShowDetails { get; set; } = false;
+    public List<FacturaRespose> Facturas { get; set; } = new List<FacturaRespose>();
+    public List<FacturaDetalleResponse> FacturaDetalles { get; set; } = new List<FacturaDetalleResponse>();
+    public FacturaRespose? SelectedFactura { get; set; } // Factura seleccionada
+
     void CrearFactura()
     {
         urlHelper.NavigateTo("/factura/crear");
     }
-    
+    void Back()
+    {
+        ShowDetails = false;
+    }
      async Task Consultar()
     {
         var resultado = await facturaServices.Consultar();
@@ -68,7 +114,6 @@
         }
         StateHasChanged();
     }
-    public List<FacturaRespose> Facturas { get; set; } = new List<FacturaRespose>();
     protected override async Task OnInitializedAsync()
     {
         await Consultar();
@@ -83,4 +128,12 @@
             StateHasChanged();
         }
     }
+    // Método para mostrar detalles de la factura seleccionada
+    void MostrarDetalles(FacturaRespose factura)
+    {
+        SelectedFactura = factura;
+        FacturaDetalles = factura.Detalles.ToList();
+        ShowDetails = true;
+    }
+    
 }
