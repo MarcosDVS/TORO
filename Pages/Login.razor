@@ -1,6 +1,4 @@
 ﻿@page "/login"
-
-
 <br/>
 <br/>
 <br/>
@@ -26,23 +24,31 @@
                     <input type="password" class="form-control" @bind="model.Password">
                 </div>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-primary" >Iniciar sesión</button>
+                    <button type="button" class="btn btn-primary" @onclick="IniciarSesion">Iniciar sesión</button>
                     <button type="button" class="btn btn-secondary" @onclick="CrearUsuario">Crear Usuario</button>
                 </div>
             </form>
         </div>
     </div>
+    @if (!string.IsNullOrEmpty(mensajeError))
+    {
+        <div class="alert alert-danger mt-3" role="alert">
+            @mensajeError
+        </div>
+    }
 </div>
 
 
 @code 
 {
-    private class Model
+    private string mensajeError = "";
+    private LoginModel model = new LoginModel();
+
+    private class LoginModel
     {
         public string UserName { get; set; }
         public string Password { get; set; }
     }
-    private Model model = new Model();
 
     
     void CrearUsuario()
@@ -51,16 +57,25 @@
     }
 
     private async Task IniciarSesion()
+{
+    if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
+    {
+        mensajeError = "Alerta, Campos Vacíos";
+    }
+    else
     {
         var resultado = await userServices.Login(model.UserName, model.Password);
         if (resultado.Exitoso)
         {
-            // El inicio de sesión fue exitoso, puedes redirigir al usuario a la página "/animal" u otra página.
+            // Login exitoso, redirige a una página protegida (e.g., /animal)
             urlHelper.NavigateTo("/animal");
         }
         else
         {
-            // Mostrar un mensaje de error de inicio de sesión si es necesario.
+            mensajeError = "Alerta, Credenciales Incorrectas";
         }
     }
+}
+
+
 }

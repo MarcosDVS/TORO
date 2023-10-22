@@ -1,5 +1,27 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+/* Establecer el fondo en negro */
+body {
+    background-color: black;
+}
+
+/* Establecer el color del texto en blanco */
+body, h1, h2, h5, p, th, td {
+    color: white;
+}
+/* site.css */
+
+.card {
+    background-color: rgb(19, 19, 19);
+    color: white;
+}
+.modal-content{
+    background-color: rgb(12, 12, 12);
+    color: white;
+}
+.modal-header{
+    background-color: rgb(19, 19, 19);
+}
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }

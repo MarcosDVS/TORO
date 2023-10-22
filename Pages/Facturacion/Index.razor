@@ -11,7 +11,7 @@
             <h3 class="card-title"><b>@TituloForm</b></h3>
         </div>
         <div class="col">
-            <button class="btn btn-danger"
+            <button class="btn btn-outline-danger"
                 @onclick="Back">
                 <span class="oi oi-arrow-left"></span>
             </button>
@@ -73,11 +73,11 @@ else if(Facturas != null)
                     <td>$@factura.SubTotal.ToString("N2")</td>
                     <td>@factura.Fecha</td>
                     <td>
-                        <button class="btn btn-primary" @onclick="() => MostrarDetalles(factura)">
+                        <button class="btn btn-outline-primary" @onclick="() => MostrarDetalles(factura)">
                             <span class="oi oi-info"></span>
                             Detalles
                         </button>
-                        <button @onclick="() => Eliminar(factura)" class="btn btn-danger">
+                        <button @onclick="() => Eliminar(factura)" class="btn btn-outline-danger">
                             <span class="oi oi-trash"></span>
                             Borrar
                         </button>
