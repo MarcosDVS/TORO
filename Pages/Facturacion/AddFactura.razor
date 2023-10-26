@@ -77,6 +77,9 @@
                 </th>
                 <th>Descripcion</th>
                 <th class="col w-25">
+                    ITBIS
+                </th>
+                <th class="col w-25">
                     Precio
                 </th>
                 <th>
@@ -95,10 +98,16 @@
                     </td>
                     <td class="col w-100">
                         @detalle.Descripcion
-                     </td>
+                    </td>
+                    <td>
+                        <span style="white-space: nowrap;">
+                            @($"{(detalle.Precio * 0.18m):C2}")
+                        </span>
+                    </td>
+
                     <td class="col w-25">
                         @detalle.Precio.ToString("C2")
-                     </td>
+                    </td>
                     <td>
                         <button 
                             type="button"

@@ -23,6 +23,7 @@
             <tr>
                 <th scope="col">Cantidad</th>
                 <th scope="col">Descripción</th>
+                <th scope="col">ITBIS</th>
                 <th scope="col">Precio</th>
             </tr>
         </thead>
@@ -32,10 +33,17 @@
                 <tr>
                     <td>@detalle.Cantidad</td>
                     <td>@detalle.Animal.Arete @detalle.Animal.Raza @detalle.Animal.Sexo</td>
-                    <td>$@detalle.Precio.ToString("N2")</td>
+                    <td>
+                        <span style="white-space: nowrap;">
+                            @($"{(detalle.Precio * 0.18m):C2}")
+                        </span>
+                    </td>
+                    <td>@detalle.Precio.ToString("C2")</td>
+
                 </tr>
             }
-            <h5>Total: $@FacturaDetalles.Sum(c=>c.Precio).ToString("N2")</h5>
+            <h5>ITBIS: @FacturaDetalles.Sum(c=>c.Precio*0.18m).ToString("C2")</h5>
+            <h5>Total: @FacturaDetalles.Sum(c=>c.Precio).ToString("C2")</h5>
             
         </tbody>
     </table>
@@ -60,6 +68,7 @@ else if(Facturas != null)
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Cliente</th>
+                <th scope="col">ITBIS</th>
                 <th scope="col">Monto</th>
                 <th scope="col">Fecha</th>
             </tr>
@@ -70,7 +79,12 @@ else if(Facturas != null)
                 <tr>
                     <th scope="row">@factura.Id</th>
                     <td>@factura.Cliente</td>
-                    <td>$@factura.SubTotal.ToString("N2")</td>
+                    <td>
+                        <span style="white-space: nowrap;">
+                            @($"{(factura.SubTotal * 0.18m):C2}")
+                        </span>
+                    </td>
+                    <td>@factura.SubTotal.ToString("C2")</td>
                     <td>@factura.Fecha</td>
                     <td>
                         <button class="btn btn-outline-primary" @onclick="() => MostrarDetalles(factura)">

@@ -22,7 +22,7 @@
     </div>
     <hr />
     <h3><b>Gastos</b> (@Gastos.Count)</h3>
-    <h5><b>Gastos Totales</b> ($@Gastos.Sum(c=>c.CostoTotal).ToString("N2"))</h5>
+    <h5><b>Gastos Totales</b> (@Gastos.Sum(c=>c.CostoTotal).ToString("C2"))</h5>
 }
 <div class="container">
 
@@ -77,8 +77,8 @@
                         <td>@item.Fecha</td>
                         <td>@item.Detalle</td>
                         <td>@item.Cantidad</td>
-                        <td>$@item.Costo.ToString("N2")</td>
-                        <td>$@item.CostoTotal.ToString("N2")</td>
+                        <td>@item.Costo.ToString("C2")</td>
+                        <td>@item.CostoTotal.ToString("C2")</td>
                         <td>
                             <button @onclick="()=>Seleccionar(item.Id)"
                                 class="btn btn-outline-primary">
