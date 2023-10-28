@@ -25,9 +25,11 @@
                     <label for="password"><b>Contraseña</b></label>
                     <input type="password" class="form-control" @bind="model.Password">
                 </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" @onclick="IniciarSesion">Iniciar sesión</button>
-                    <button type="button" class="btn btn-secondary" @onclick="CrearUsuario">Crear Usuario</button>
+                <div class="d-flex justify-content-center mb-3">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" @onclick="IniciarSesion">Iniciar sesión</button>
+                        <button type="button" class="btn btn-secondary" @onclick="CrearUsuario">Crear Usuario</button>
+                    </div>
                 </div>
             </form>
         </div>
