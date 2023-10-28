@@ -1,8 +1,8 @@
 namespace TORO.Data.Request;
 
-public class AnimalRequest
+public class LostAnimalRequest
 {
-    public AnimalRequest()
+    public LostAnimalRequest()
     {
         
     }
@@ -12,5 +12,6 @@ public class AnimalRequest
     public string Sexo { get; set; } = null!;
     public decimal CostoCompra { get; set; }
     public DateTime FechaNacimiento { get; set; } = DateTime.Now;
-    public bool Vendido { get; set; } = false;
+    public DateTime FechaMuerte { get; set; } = DateTime.Now;
+
 }

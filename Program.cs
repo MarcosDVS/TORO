@@ -20,6 +20,7 @@ builder.Services.AddScoped<IMyDbContext,MyDbContext>();
 #region Servicios
 builder.Services.AddScoped<IUserServices,UserServices>();
 builder.Services.AddScoped<IAnimalServices,AnimalServices>();
+builder.Services.AddScoped<ILostAnimalServices,LostAnimalServices>();
 builder.Services.AddScoped<IGastoServices,GastoServices>();
 builder.Services.AddScoped<IFacturaServices,FacturaServices>();
 #endregion

@@ -5,7 +5,7 @@ using TORO.Data.Response;
 
 namespace TORO.Data.Model;
 
-public class Animal
+public class LostAnimal
 {
     [Key]
     public int Id { get; set; }
@@ -15,30 +15,32 @@ public class Animal
     [Column(TypeName ="decimal(18,2)")]
     public decimal CostoCompra { get; set; }
     public DateTime FechaNacimiento { get; set; } = DateTime.Now;
-    public bool Vendido { get; set; } = false;
+    public DateTime FechaMuerte { get; set; } = DateTime.Now;
 
-    public static Animal Crear(AnimalRequest item) => new()
+    #region Funciones
+    public static LostAnimal Crear(LostAnimalRequest item) => new()
     {
         Arete = item.Arete,
         Raza = item.Raza,
         Sexo = item.Sexo,
         CostoCompra = item.CostoCompra,
         FechaNacimiento = item.FechaNacimiento,
-        Vendido = item.Vendido
+        FechaMuerte = item.FechaMuerte
     };
-    public bool Modificar(AnimalRequest item)
+    public bool Modificar(LostAnimalRequest user)
     {
         var cambio = false;
-        if (Arete != item.Arete) Arete = item.Arete; cambio = true;
-        if (Raza != item.Raza) Raza = item.Raza; cambio = true;
-        if (Sexo != item.Sexo) Sexo = item.Sexo; cambio = true;
-        if (CostoCompra != item.CostoCompra) CostoCompra = item.CostoCompra; cambio = true;
-        if (FechaNacimiento != item.FechaNacimiento) FechaNacimiento = item.FechaNacimiento; cambio = true;
+        if (Arete != user.Arete) Arete = user.Arete; cambio = true;
+        if (Raza != user.Raza) Raza = user.Raza; cambio = true;
+        if (Sexo != user.Sexo) Sexo = user.Sexo; cambio = true;
+        if (CostoCompra != user.CostoCompra) CostoCompra = user.CostoCompra; cambio = true;
+        if (FechaNacimiento != user.FechaNacimiento) FechaNacimiento = user.FechaNacimiento; cambio = true;
+        if (FechaMuerte != user.FechaMuerte) FechaMuerte = user.FechaMuerte; cambio = true;
 
         return cambio;
     }
  
-    public AnimalResponse ToResponse() => new()
+    public LostAnimalResponse ToResponse() => new()
     {
         Id = Id,
         Arete = Arete,
@@ -46,6 +48,9 @@ public class Animal
         Sexo = Sexo,
         CostoCompra = CostoCompra,
         FechaNacimiento = FechaNacimiento,
-        Vendido = Vendido
+        FechaMuerte = FechaMuerte
     };
+
+    #endregion
+
 }

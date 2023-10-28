@@ -21,11 +21,11 @@
         </div>
     </div>
     <hr>
-    <h3><b>Bovinos</b> (@Animales.Count(c=>!c.Muerto && !c.Vendido))</h3>
-    <h5><b>Inversión en bovinos</b> (@Animales.Where(c => !c.Muerto && !c.Vendido).Sum(c => c.CostoCompra).ToString("C2"))</h5>
+    <h3><b>Bovinos</b> (@Animales.Where(c=>!c.Vendido).Count())</h3>
 }
 
 <div class="container">
+    <h5><b>Inversión en bovinos</b> (@Animales.Where(c=>!c.Vendido).Sum(c => c.CostoCompra).ToString("C2"))</h5>
     @if (ShowForm)
     {
         <div class="card">
@@ -75,7 +75,7 @@
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-outline-success"
-                                @onclick="ConfirmarMuerte" >
+                                @onclick="ConfirmarPerdido" >
                                 <span class="oi oi-check"></span> Sí
                             </button>
                             <button class="btn btn-outline-danger"
@@ -100,9 +100,9 @@
             <tbody>
                 @foreach (var item in Animales)
                 {
-                    @if(!item.Muerto && !item.Vendido)
+                    @if(!item.Vendido)
                     {
-                            <tr>
+                        <tr>
                             <td>@item.Arete</td>
                             <td>@item.Raza</td>
                             <td>@item.Sexo</td>
@@ -128,13 +128,12 @@
                                     Borrar
                                 </button>
                             </td>
-                        </tr>   
+                        </tr>
                     }
                 }
             </tbody>
         </table>
     }
-    
 </div>    
 @code {
     public string TituloForm => request.Id == 0 ?
@@ -154,17 +153,6 @@
         MostrarConfirmacio = true;
         AnimalEnConfirmacion = animal;
     }
-    async Task ConfirmarMuerte()
-    {
-        // Realiza una llamada al servidor para cambiar el estado del animal a muerto.
-        var resultado = await animalServices.MarcarComoMuerto(AnimalEnConfirmacion.Id);
-        if (resultado.Exitoso)
-        {
-            MostrarConfirmacio = false;
-            await CargarInfo(); // Actualiza la lista de animales después del cambio en el servidor.
-        }
-    }
-
     void CancelarConfirmacion()
     {
         MostrarConfirmacio = false;
@@ -233,4 +221,34 @@
             }
         }
     }
+    async Task ConfirmarPerdido()
+{
+    // Crear un objeto LostAnimalRequest a partir de AnimalRequest
+    var lostAnimalRequest = new LostAnimalRequest
+    {
+        Id = AnimalEnConfirmacion.Id,
+        Arete = AnimalEnConfirmacion.Arete,
+        Raza = AnimalEnConfirmacion.Raza,
+        Sexo = AnimalEnConfirmacion.Sexo,
+        CostoCompra = AnimalEnConfirmacion.CostoCompra,
+        FechaNacimiento = AnimalEnConfirmacion.FechaNacimiento,
+        FechaMuerte = DateTime.Now // Ajusta la fecha de muerte según sea necesario
+    };
+
+    // Realiza una llamada al servidor para marcar el animal como perdido en la entidad LostAnimal.
+    var resultado = await lostAnimalServices.Crear(lostAnimalRequest);
+    
+    if (resultado.Exitoso)
+    {
+        // Luego, elimina el animal de la entidad Animal.
+        var eliminacionExitosa = await animalServices.Eliminar(AnimalEnConfirmacion.ToRequest());
+        
+        if (eliminacionExitosa.Exitoso)
+        {
+            MostrarConfirmacio = false;
+            await CargarInfo(); // Actualiza la lista de animales después de los cambios en el servidor.
+        }
+    }
+}
+
 }

@@ -23,19 +23,24 @@
                 </div>
                 
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                    <button @onclick="Cancelar" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                    <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
                 </div>
             </EditForm>
         </div>
 </div>
-
+<!-- Luego, en tu formulario, puedes mostrar ErrorMessage cuando sea necesario -->
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">@ErrorMessage</div>
+}
 @code
 {
     public string Filtro { get; set; } = "";
     public List<UserResponse> Users { get; set; }
         = new List<UserResponse>();
     public UserRequest request { get; set; } = new UserRequest();
+    public string ErrorMessage { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,23 +55,34 @@
             Users = resultado.Datos!;
         }
     }
- 
     public async Task Send()
     {
         if (request.Id == 0)
         {
-            //Debo registrar el contacto..
-            var r = await userServices.Crear(request);
-            if (r.Exitoso)
+            // Verificar si el correo electrónico ya existe en la base de datos
+            var existingUser = Users.FirstOrDefault(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
+            if (existingUser != null)
             {
-                Cancelar();
-                await CargarUsuarios();
-                StateHasChanged();
+                // Mostrar mensaje de error porque el correo electrónico ya existe
+                // Aquí puedes establecer una variable de estado para mostrar el mensaje en tu interfaz de usuario
+                // Por ejemplo: 
+                ErrorMessage = "Patron el correo electrónico ya existe 🤨";
+            }
+            else
+            {
+                // Debo registrar el contacto.
+                var r = await userServices.Crear(request);
+                if (r.Exitoso)
+                {
+                    Cancelar();
+                    await CargarUsuarios();
+                    StateHasChanged();
+                }
             }
         }
         else
         {
-            //Debo solicitar modificar el contacto...
+            // Debo solicitar modificar el contacto...
             var r = await userServices.Modificar(request);
             if (r.Exitoso)
             {

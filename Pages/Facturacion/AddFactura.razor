@@ -32,7 +32,7 @@
                     <option disabled>Selecciona una ciudad</option>
                     @foreach (var animal in Animales)
                     {
-                        @if(!animal.Muerto && !animal.Vendido)
+                        @if(!animal.Vendido)
                         {
                             <option value="@animal.Id">
                                 @animal.Arete @animal.Raza @animal.Sexo

@@ -22,10 +22,9 @@
     </div>
     <hr />
     <h3><b>Gastos</b> (@Gastos.Count)</h3>
-    <h5><b>Gastos Totales</b> (@Gastos.Sum(c=>c.CostoTotal).ToString("C2"))</h5>
 }
 <div class="container">
-
+    <h5><b>Gastos Totales</b> (@Gastos.Sum(c=>c.CostoTotal).ToString("C2"))</h5>
     @if (ShowForm)
     {
         <div class="card">

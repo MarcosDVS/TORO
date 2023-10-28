@@ -57,33 +57,33 @@
     @if (ShowForm)
     {
         <div class="card">
-        <div class="card-body">
-            <h3 class="card-title"><b>@TituloForm</b></h3>
-            <hr>
-            <EditForm Model="request" OnValidSubmit="Send">
-                <div class="mb-3 input-group">
-                    <label for="Nombre" class="input-group-text">Nombre</label>
-                    <InputText id="Nombre" class="form-control" @bind-Value="@request.Nombre" />
-                </div>
-                <div class="mb-3 input-group">
-                    <label for="Apellido" class="input-group-text">Apellido</label>
-                    <InputText id="Apellido" class="form-control" @bind-Value="@request.Apellido" />
-                </div>
-                <div class="mb-3 input-group">
-                    <label for="Usuario" class="input-group-text">Usuario</label>
-                    <InputText id="Usuario" class="form-control" @bind-Value="@request.Email" />
-                </div>
-                <div class="mb-3 input-group">
-                    <label for="Clave" class="input-group-text">Clave</label>
-                    <InputText id="Clave" class="form-control" @bind-Value="@request.Clave" />
-                </div>
-                
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-outline-primary">Guardar</button>
-                    <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
-                </div>
-            </EditForm>
-        </div>
+            <div class="card-body">
+                <h3 class="card-title"><b>@TituloForm</b></h3>
+                <hr>
+                <EditForm Model="request" OnValidSubmit="Send">
+                    <div class="mb-3 input-group">
+                        <label for="Nombre" class="input-group-text">Nombre</label>
+                        <InputText id="Nombre" class="form-control" @bind-Value="@request.Nombre" />
+                    </div>
+                    <div class="mb-3 input-group">
+                        <label for="Apellido" class="input-group-text">Apellido</label>
+                        <InputText id="Apellido" class="form-control" @bind-Value="@request.Apellido" />
+                    </div>
+                    <div class="mb-3 input-group">
+                        <label for="Usuario" class="input-group-text">Usuario</label>
+                        <InputText id="Usuario" class="form-control" @bind-Value="@request.Email" />
+                    </div>
+                    <div class="mb-3 input-group">
+                        <label for="Clave" class="input-group-text">Clave</label>
+                        <InputText id="Clave" class="form-control" @bind-Value="@request.Clave" />
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                        <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
+                    </div>
+                </EditForm>
+            </div>
         </div>
     }
     else
@@ -138,7 +138,7 @@
         = new List<UserResponse>();
     public UserResponse? SelectedUser { get; set; }
     public UserRequest request { get; set; } = new UserRequest();
-    
+    public string ErrorMessage { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -207,6 +207,7 @@
             }
         }
     }
+
     public async Task Eliminar(UserResponse user)
     {
         var resultado = await userServices.Eliminar(user.ToRequest());

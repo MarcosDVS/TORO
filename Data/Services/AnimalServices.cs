@@ -9,7 +9,6 @@ namespace TORO.Data.Services;
 public interface IAnimalServices
 {
     Task<Result<List<AnimalResponse>>> Consultar(string filtro);
-    Task<Result> MarcarComoMuerto(int animalId);
     Task<Result<int>> Registrar(AnimalRequest datos);
     Task<Result> Eliminar(AnimalRequest request);
     Task<Result> Modificar(AnimalRequest request);
@@ -44,9 +43,9 @@ public class AnimalServices : IAnimalServices
     {
         try
             {
-                var usuarios = await dbContext.Animals
+                var item = await dbContext.Animals
                     .Where(u =>
-                        (u.Arete + " " + u.Raza + " " + u.Sexo + " " + u.FechaNacimiento+" "+u.FechaMuerte)
+                        (u.Arete + " " + u.Raza + " " + u.Sexo + " " + u.FechaNacimiento+" "+u.CostoCompra)
                         .ToLower()
                         .Contains(filtro.ToLower()
                         )
@@ -57,7 +56,7 @@ public class AnimalServices : IAnimalServices
                 {
                     Mensaje = "Ok",
                     Exitoso = true,
-                    Datos = usuarios
+                    Datos = item
                 };
             }
             catch (Exception E)
@@ -69,38 +68,17 @@ public class AnimalServices : IAnimalServices
                 };
             }
     }
-   public async Task<Result> MarcarComoMuerto(int animalId)
-    {
-        try
-        {
-            var animal = await dbContext.Animals
-                .FirstOrDefaultAsync(c => c.Id == animalId);
-
-            if (animal == null)
-                return new Result() { Mensaje = "No se encontró el animal", Exitoso = false };
-
-            animal.Muerto = true;
-            animal.FechaMuerte = DateTime.Now;
-            await dbContext.SaveChangesAsync();
-
-            return new Result() { Mensaje = "Ok", Exitoso = true };
-        }
-        catch (Exception E)
-        {
-            return new Result() { Mensaje = E.Message, Exitoso = false };
-        }
-    }
 
 public async Task<Result> Eliminar(AnimalRequest request)
 {
     try
     {
-        var contacto = await dbContext.Animals
+        var item = await dbContext.Animals
             .FirstOrDefaultAsync(c => c.Id == request.Id);
-        if (contacto == null)
-            return new Result() { Mensaje = "No se encontro el usuario", Exitoso = false };
+        if (item == null)
+            return new Result() { Mensaje = "No se encontro", Exitoso = false };
 
-        dbContext.Animals.Remove(contacto);
+        dbContext.Animals.Remove(item);
         await dbContext.SaveChangesAsync();
         return new Result() { Mensaje = "Ok", Exitoso = true };
     }

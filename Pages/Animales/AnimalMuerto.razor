@@ -17,11 +17,11 @@
         </div>
     </div>
     <hr>
-    <h3><b>Bovinos</b> (@Animales.Count(c=>c.Muerto==true))</h3>
-    <h5><b>Perdidas en bovinos</b> (@Animales.Where(c => c.Muerto).Sum(c => c.CostoCompra).ToString("C2"))</h5>
+    <h3><b>Bovinos</b> (@Animales.Count())</h3>
 }
 
 <div class="container">
+    <h5><b>Perdidas en bovinos</b> (@Animales.Sum(c => c.CostoCompra).ToString("C2"))</h5>
     @if (ShowForm)
     {
         <div class="card">
@@ -79,29 +79,26 @@
             <tbody>
                 @foreach (var item in Animales)
                 {
-                    @if(item.Muerto==true)
-                    {
-                            <tr>
-                            <td>@item.Arete</td>
-                            <td>@item.Raza</td>
-                            <td>@item.Sexo</td>
-                            <td>@item.CostoCompra.ToString("C2")</td>
-                            <td>@item.FechaNacimiento</td>
-                            <td>@item.FechaMuerte</td>
-                            <td>
-                                <button @onclick="()=>Seleccionar(item.Id)"
-                                    class="btn btn-outline-primary">
-                                    <span class="oi oi-pencil"></span>
-                                    Editar
-                                </button>
-                                <button @onclick="()=>Eliminar(item)"
-                                    class="btn btn-outline-danger">
-                                    <span class="oi oi-trash"></span>
-                                    Borrar
-                                </button>
-                            </td>
-                        </tr>   
-                    }
+                     <tr>
+                        <td>@item.Arete</td>
+                        <td>@item.Raza</td>
+                        <td>@item.Sexo</td>
+                        <td>@item.CostoCompra.ToString("C2")</td>
+                        <td>@item.FechaNacimiento</td>
+                        <td>@item.FechaMuerte</td>
+                        <td>
+                            <button @onclick="()=>Seleccionar(item.Id)"
+                                class="btn btn-outline-primary">
+                                <span class="oi oi-pencil"></span>
+                                Editar
+                            </button>
+                            <button @onclick="()=>Eliminar(item)"
+                                class="btn btn-outline-danger">
+                                <span class="oi oi-trash"></span>
+                                Borrar
+                            </button>
+                        </td>
+                    </tr>
                 }
             </tbody>
         </table>
@@ -114,18 +111,18 @@
     
     public bool ShowForm { get; set; } = false;
     public string Filtro { get; set; } = "";
-    public List<AnimalResponse> Animales { get; set; } = new List<AnimalResponse>();
-    public AnimalResponse SelectCar { get; set; } = new AnimalResponse();
-    public AnimalRequest request { get; set; } = new AnimalRequest();
+    public List<LostAnimalResponse> Animales { get; set; } = new List<LostAnimalResponse>();
+    public LostAnimalResponse SelectCar { get; set; } = new LostAnimalResponse();
+    public LostAnimalRequest request { get; set; } = new LostAnimalRequest();
     
     void Cancelar()
     {
-        request = new AnimalRequest();
+        request = new LostAnimalRequest();
         ShowForm = false;
     }
     async Task CargarInfo()
     {
-        var resultado = await animalServices.Consultar(Filtro);
+        var resultado = await lostAnimalServices.Consultar(Filtro);
         if (resultado.Exitoso)
             Animales = resultado.Datos!;
     }
@@ -135,14 +132,14 @@
     }
     public async Task<bool> Consultar()
     {
-        var response = await animalServices.Consultar(Filtro);
+        var response = await lostAnimalServices.Consultar(Filtro);
         if(response.Exitoso)
             Animales = response.Datos!;
         return true;
     }
-    public async Task Eliminar(AnimalResponse user)
+    public async Task Eliminar(LostAnimalResponse item)
     {
-        var resultado = await animalServices.Eliminar(user.ToRequest());
+        var resultado = await lostAnimalServices.Eliminar(item.ToRequest());
         if (resultado.Exitoso)
         {
             await CargarInfo();
@@ -155,14 +152,14 @@
         request = Animales
         .Where(c => c.Id == Id)
         .Select(c => c.ToRequest())
-        .FirstOrDefault() ?? new AnimalRequest();
+        .FirstOrDefault() ?? new LostAnimalRequest();
     }
     public async Task Send()
     {
         if (request.Id == 0 )
         {
             //Debo registrar el contacto..
-            var r = await animalServices.Registrar(request);
+            var r = await lostAnimalServices.Crear(request);
             if (r.Exitoso)
             {
                 Cancelar();
@@ -173,7 +170,7 @@
         else
         {
             //Debo solicitar modificar el contacto...
-            var r = await animalServices.Modificar(request);
+            var r = await lostAnimalServices.Modificar(request);
             if (r.Exitoso)
             {
                 Cancelar();
