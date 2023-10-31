@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TORO.Authentication;
 using TORO.Data.Model;
 
 namespace TORO.Data.Context;
@@ -20,12 +21,14 @@ public interface IMyDbContext
 public class MyDbContext : DbContext, IMyDbContext
 {
     #region Constructor
-    public MyDbContext(DbContextOptions options): base(options)
+    private readonly IConfiguration config;
+
+    public MyDbContext(IConfiguration config)
     {
-        
+        this.config = config;
     }
     #endregion
-    
+
     #region Tablas
     public DbSet<User> Users { get; set; }
     public DbSet<Animal> Animals { get; set; }
@@ -36,9 +39,19 @@ public class MyDbContext : DbContext, IMyDbContext
     #endregion
 
     #region Funciones
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(config.GetConnectionString("MSSQL"));
+    }
+
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         return base.SaveChangesAsync(cancellationToken);
+    }
+
+    internal UserAccount? FirstOrDefault(Func<object, bool> value)
+    {
+        throw new NotImplementedException();
     }
     #endregion
 }

@@ -9,6 +9,7 @@ public class UserResponse
     public string Apellido { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string Clave { get; set; } = null!;
+    public string Role { get; set; } = null!;
 
 
     public UserRequest ToRequest()
@@ -19,7 +20,8 @@ public class UserResponse
             Nombre = Nombre,
             Apellido = Apellido,
             Email = Email,
-            Clave = Clave
+            Clave = Clave,
+            Role = Role
         };
     }
 }

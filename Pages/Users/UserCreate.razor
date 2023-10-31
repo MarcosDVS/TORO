@@ -70,6 +70,20 @@
             }
             else
             {
+                // Verificar si ya existen usuarios en la base de datos
+                var hasExistingUsers = Users.Any();
+
+                if (hasExistingUsers)
+                {
+                    // Si ya existen usuarios, establece Role en "User"
+                    request.Role = "User";
+                }
+                else
+                {
+                    // Si no existen usuarios, establece Role en "Administrator"
+                    request.Role = "Administrator";
+                }
+
                 // Debo registrar el contacto.
                 var r = await userServices.Crear(request);
                 if (r.Exitoso)
@@ -92,10 +106,11 @@
             }
         }
     }
+
     void Cancelar()
     {
         request = new UserRequest();
-        urlHelper.NavigateTo("/login");
+        urlHelper.NavigateTo("/", forceLoad: true);
     }
  
 }

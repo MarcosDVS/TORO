@@ -15,7 +15,7 @@
                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
                 </svg>
                 Buscar</button>
-            <button class="btn btn-outline-success" @onclick="()=>{ShowForm = !ShowForm;}">
+            <button class="btn btn-outline-success" @onclick="Formulario">
                 <span class="oi oi-plus"></span>
             </button>
         </div>
@@ -25,42 +25,44 @@
 }
 
 <div class="container">
-    <h5><b>Inversión en bovinos</b> (@Animales.Where(c=>!c.Vendido).Sum(c => c.CostoCompra).ToString("C2"))</h5>
+    @if(!ShowForm)
+    {
+        <h5><b>Inversión en bovinos</b> (@Animales.Where(c=>!c.Vendido).Sum(c => c.CostoCompra).ToString("C2"))</h5>
+    }
     @if (ShowForm)
     {
         <div class="card">
-        <div class="card-body">
-            <h3 class="card-title"><b>@TituloForm</b></h3>
-            <hr>
-
-            <EditForm Model="request" OnValidSubmit="Send">
-                <div class="mb-3 input-group">
-                    <label for="Arete" class="input-group-text">Arete</label>
-                    <InputText id="Arete" class="form-control" @bind-Value="@request.Arete" />
-                </div>
-                <div class="mb-3 input-group">
-                    <label for="Raza" class="input-group-text">Raza</label>
-                    <InputText id="Raza" class="form-control" @bind-Value="@request.Raza" />
-                </div>
-                <div class="mb-3 input-group">
-                    <label for="Sexo" class="input-group-text">Sexo</label>
-                    <InputText id="Sexo" class="form-control" @bind-Value="@request.Sexo" />
-                </div>
-                <div class="mb-3 input-group">
-                    <label for="CostoCompra" class="input-group-text">Costo/Compra</label>
-                    <InputNumber id="CostoCompra" class="form-control" @bind-Value="@request.CostoCompra" />
-                </div>
-                <div class="mb-3 input-group">
-                    <label for="FechaNacimiento" class="input-group-text">Fecha/Nacimiento</label>
-                    <InputDate id="FechaNacimiento" class="form-control" @bind-Value="@request.FechaNacimiento" />
-                </div>
-                
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-outline-primary">Guardar</button>
-                    <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
-                </div>
-            </EditForm>
-        </div>
+            <div class="card-body">
+                <h3 class="card-title"><b>@TituloForm</b></h3>
+                <hr>
+                <EditForm Model="request" OnValidSubmit="Send">
+                    <div class="mb-3 input-group">
+                        <label for="Arete" class="input-group-text">Arete</label>
+                        <InputText id="Arete" class="form-control" @bind-Value="@request.Arete" />
+                    </div>
+                    <div class="mb-3 input-group">
+                        <label for="Raza" class="input-group-text">Raza</label>
+                        <InputText id="Raza" class="form-control" @bind-Value="@request.Raza" />
+                    </div>
+                    <div class="mb-3 input-group">
+                        <label for="Sexo" class="input-group-text">Sexo</label>
+                        <InputText id="Sexo" class="form-control" @bind-Value="@request.Sexo" />
+                    </div>
+                    <div class="mb-3 input-group">
+                        <label for="CostoCompra" class="input-group-text">Costo/Compra</label>
+                        <InputNumber id="CostoCompra" class="form-control" @bind-Value="@request.CostoCompra" />
+                    </div>
+                    <div class="mb-3 input-group">
+                        <label for="FechaNacimiento" class="input-group-text">Fecha/Nacimiento</label>
+                        <InputDate id="FechaNacimiento" class="form-control" @bind-Value="@request.FechaNacimiento" />
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                        <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
+                    </div>
+                </EditForm>
+            </div>
         </div>
     }
     else
@@ -109,24 +111,33 @@
                             <td>@item.CostoCompra.ToString("C2")</td>
                             <td>@item.FechaNacimiento</td>
                             <td>
-                                <button @onclick="()=>MostrarConfirmacion(item)"
-                                    class="btn btn-outline-primary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-dizzy" viewBox="0 0 16 16">
-                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                        <path d="M9.146 5.146a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 1 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 0-.708zm-5 0a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 1 1 .708.708l-.647.646.647.646a.5.5 0 1 1-.708.708L5.5 7.207l-.646.647a.5.5 0 1 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 0-.708zM10 11a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
-                                    </svg>
-                                    Perdido
-                                </button>
-                                <button @onclick="()=>Seleccionar(item.Id)"
-                                    class="btn btn-outline-primary">
-                                    <span class="oi oi-pencil"></span>
-                                    Editar
-                                </button>
-                                <button @onclick="()=>Eliminar(item)"
-                                    class="btn btn-outline-danger">
-                                    <span class="oi oi-trash"></span>
-                                    Borrar
-                                </button>
+                                <AuthorizeView Roles="Administrator">
+                                    <Authorized>
+                                        <button @onclick="()=>MostrarConfirmacion(item)"
+                                            class="btn btn-outline-primary">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-dizzy" viewBox="0 0 16 16">
+                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                                <path d="M9.146 5.146a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 1 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 0-.708zm-5 0a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 1 1 .708.708l-.647.646.647.646a.5.5 0 1 1-.708.708L5.5 7.207l-.646.647a.5.5 0 1 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 0-.708zM10 11a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
+                                            </svg>
+                                            Perdido
+                                        </button>
+                                        <button @onclick="()=>Seleccionar(item.Id)"
+                                            class="btn btn-outline-primary">
+                                            <span class="oi oi-pencil"></span>
+                                            Editar
+                                        </button>
+                                        <button @onclick="()=>Eliminar(item)"
+                                            class="btn btn-outline-danger">
+                                            <span class="oi oi-trash"></span>
+                                            Borrar
+                                        </button>
+                                    </Authorized>
+                                    <NotAuthorized>
+                                        <button class="btn btn-outline-danger">
+                                            No tienes permisos para realizar esta accion.
+                                        </button>
+                                    </NotAuthorized>
+                                </AuthorizeView>
                             </td>
                         </tr>
                     }
@@ -146,7 +157,6 @@
     public AnimalResponse SelectCar { get; set; } = new AnimalResponse();
     public AnimalResponse AnimalEnConfirmacion { get; set; } = new AnimalResponse();
     public AnimalRequest request { get; set; } = new AnimalRequest();
-    
 
     void MostrarConfirmacion(AnimalResponse animal)
     {
@@ -250,5 +260,8 @@
         }
     }
 }
-
+    void Formulario()
+    {
+        urlHelper.NavigateTo("add/bovino");
+    }
 }

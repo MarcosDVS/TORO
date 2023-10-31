@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
+using TORO.Authentication;
 using TORO.Data;
 using TORO.Data.Context;
 using TORO.Data.Services;
@@ -14,7 +15,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 #region Configuracion de la base de datos SQLite
-builder.Services.AddSqlite<MyDbContext>("Data Source=.//Data//Context//Toro.sqlite");
+builder.Services.AddDbContext<MyDbContext>();
 builder.Services.AddScoped<IMyDbContext,MyDbContext>();
 #endregion
 #region Servicios
@@ -23,6 +24,13 @@ builder.Services.AddScoped<IAnimalServices,AnimalServices>();
 builder.Services.AddScoped<ILostAnimalServices,LostAnimalServices>();
 builder.Services.AddScoped<IGastoServices,GastoServices>();
 builder.Services.AddScoped<IFacturaServices,FacturaServices>();
+#endregion
+#region Authentication
+builder.Services.AddAuthenticationCore();
+builder.Services.AddScoped<ProtectedSessionStorage>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+//builder.Services.AddSingleton<UserAccountService>();
+builder.Services.AddScoped<IUserAccountService,UserAccountService>();
 #endregion
 
 var app = builder.Build();
@@ -44,14 +52,11 @@ app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
-var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
-using (var scope = scopeFactory.CreateScope())
+using (var serviceScope =  app.Services.GetService<IServiceScopeFactory>()!.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<MyDbContext>();
-    if (db.Database.EnsureCreated())
-    {
-        
-    }
+    var dbContext = serviceScope.ServiceProvider
+        .GetRequiredService<MyDbContext>();
+    dbContext.Database.Migrate();
 }
 
 app.Run();

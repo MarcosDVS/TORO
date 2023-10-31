@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TORO.Authentication;
 using TORO.Data.Context;
 using TORO.Data.Model;
 using TORO.Data.Request;
@@ -77,7 +78,7 @@ public class UserServices : IUserServices
         {
             var usuarios = await _database.Users
                 .Where(u =>
-                    (u.Nombre + " "+ u.Apellido+" "+ u.Email + " "+ u.Clave)
+                    (u.Nombre + " "+ u.Apellido+" "+ u.Email + " "+ u.Clave+" "+u.Role)
                     .ToLower()
                     .Contains(filtro.ToLower()
                     )
@@ -136,7 +137,7 @@ public class UserServices : IUserServices
             };
         }
     }
-    
+
 }
 
 

@@ -1,5 +1,6 @@
 ﻿@page "/factura"
 @using TORO.Data.Response;
+@attribute [Authorize(Roles = "Administrator,User")]
 
 <MenuDisplay />
 <hr>
@@ -99,14 +100,23 @@ else
                         <td>@factura.SubTotal.ToString("C2")</td>
                         <td>@factura.Fecha</td>
                         <td>
-                            <button class="btn btn-outline-primary" @onclick="() => MostrarDetalles(factura)">
-                                <span class="oi oi-info"></span>
-                                Detalles
-                            </button>
-                            <button @onclick="() => Eliminar(factura)" class="btn btn-outline-danger">
-                                <span class="oi oi-trash"></span>
-                                Borrar
-                            </button>
+                            <AuthorizeView Roles="Administrator">
+                                <Authorized>
+                                    <button class="btn btn-outline-primary" @onclick="() => MostrarDetalles(factura)">
+                                        <span class="oi oi-info"></span>
+                                        Detalles
+                                    </button>
+                                    <button @onclick="() => Eliminar(factura)" class="btn btn-outline-danger">
+                                        <span class="oi oi-trash"></span>
+                                        Borrar
+                                    </button>
+                                </Authorized>
+                                <NotAuthorized>
+                                    <button class="btn btn-outline-danger">
+                                        No tienes permisos para realizar esta accion.
+                                    </button>
+                                </NotAuthorized>
+                            </AuthorizeView>
                         </td>
                     </tr>
                 }

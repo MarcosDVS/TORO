@@ -1,0 +1,114 @@
+@page "/add/user"
+@attribute [Authorize(Roles = "Administrator")]
+
+<MenuDisplay />
+<hr>
+
+<div class="card">
+    <div class="card-body">
+        <h3 class="card-title"><b>Agregar usuario</b></h3>
+        <hr>
+        <EditForm Model="request" OnValidSubmit="Send">
+            <div class="mb-3 input-group">
+                <label for="Nombre" class="input-group-text">Nombre</label>
+                <InputText id="Nombre" class="form-control" @bind-Value="@request.Nombre" />
+            </div>
+            <div class="mb-3 input-group">
+                <label for="Apellido" class="input-group-text">Apellido</label>
+                <InputText id="Apellido" class="form-control" @bind-Value="@request.Apellido" />
+            </div>
+            <div class="mb-3 input-group">
+                <label for="Usuario" class="input-group-text">Usuario</label>
+                <InputText id="Usuario" class="form-control" @bind-Value="@request.Email" />
+            </div>
+            <div class="mb-3 input-group">
+                <label for="Clave" class="input-group-text">Clave</label>
+                <InputText id="Clave" class="form-control" @bind-Value="@request.Clave" />
+            </div>
+            <!-- Add select for Administrator and User roles -->
+            <div class="mb-3 input-group">
+                <label class="input-group-text" for="chkAdministrator">Role</label>
+                <select name="" id="role" class="form-control" @bind="@request.Role">
+                    <option disabled>Seleccione un Role</option>
+                    <option value="Administrator">Administrator</option>
+                    <option value="User">User</option>
+                </select>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
+            </div>
+        </EditForm>
+    </div>
+    <!-- Luego, en tu formulario, puedes mostrar MensajeError cuando sea necesario -->
+    @if (!string.IsNullOrWhiteSpace(MensajeError))
+    {
+        <div class="alert alert-danger" role="alert">@MensajeError</div>
+    }
+</div>
+@code
+{
+    public string Filtro { get; set; } = "";
+    public List<UserResponse> Users { get; set; }
+        = new List<UserResponse>();
+    public UserRequest request { get; set; } = new UserRequest();
+    public string MensajeError { get; set; } = ""; // Inicializa la variable en cadena vacía
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarUsuarios();
+    }
+    async Task CargarUsuarios()
+    {
+        var resultado =
+        await userServices.Consultar(Filtro);
+        if (resultado.Exitoso)
+        {
+            Users = resultado.Datos!;
+        }
+    }
+    public async Task Send()
+    {
+        if (request.Id == 0)
+        {
+            // Verificar si el correo electrónico ya existe en la base de datos
+            var existingUser = Users.FirstOrDefault(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
+            if (existingUser != null)
+            {
+                // Mostrar mensaje de error porque el correo electrónico ya existe
+                // Aquí puedes establecer una variable de estado para mostrar el mensaje en tu interfaz de usuario
+                // Por ejemplo: 
+                MensajeError = "El correo electrónico ya existe";
+            }
+            else
+            {
+                // Debo registrar el contacto.
+                var r = await userServices.Crear(request);
+                if (r.Exitoso)
+                {
+                    Cancelar();
+                    await CargarUsuarios();
+                    StateHasChanged();
+                }
+            }
+        }
+        else
+        {
+            // Debo solicitar modificar el contacto...
+            var r = await userServices.Modificar(request);
+            if (r.Exitoso)
+            {
+                Cancelar();
+                await CargarUsuarios();
+                StateHasChanged();
+            }
+        }
+    }
+    void Cancelar()
+    {
+        request = new UserRequest();
+        urlHelper.NavigateTo("/usuarios", forceLoad: true);
+    }
+ 
+}

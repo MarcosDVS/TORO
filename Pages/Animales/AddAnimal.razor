@@ -1,0 +1,115 @@
+@page "/add/bovino"
+@attribute [Authorize(Roles = "Administrator,User")]
+
+<MenuDisplay />
+<hr>
+
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title"><b>Agregar bovino</b></h3>
+            <hr>
+
+            <EditForm Model="request" OnValidSubmit="Send">
+                <div class="mb-3 input-group">
+                    <label for="Arete" class="input-group-text">Arete</label>
+                    <InputText id="Arete" class="form-control" @bind-Value="@request.Arete" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="Raza" class="input-group-text">Raza</label>
+                    <InputText id="Raza" class="form-control" @bind-Value="@request.Raza" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="Sexo" class="input-group-text">Sexo</label>
+                    <InputText id="Sexo" class="form-control" @bind-Value="@request.Sexo" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="CostoCompra" class="input-group-text">Costo/Compra</label>
+                    <InputNumber id="CostoCompra" class="form-control" @bind-Value="@request.CostoCompra" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="FechaNacimiento" class="input-group-text">Fecha/Nacimiento</label>
+                    <InputDate id="FechaNacimiento" class="form-control" @bind-Value="@request.FechaNacimiento" />
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                    <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
+                </div>
+            </EditForm>
+        </div>
+            @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+            {
+                <div class="alert alert-danger" role="alert">@ErrorMessage</div>
+            }
+    </div>
+</div>
+
+@code
+{
+    public AnimalRequest request { get; set; } = new AnimalRequest();
+    public List<AnimalResponse> Animales { get; set; } = new List<AnimalResponse>();
+    public string Filtro { get; set; } = "";
+    public string ErrorMessage { get; set; } = "";
+    void Cancelar()
+    {
+        request = new AnimalRequest();
+        urlHelper.NavigateTo("animal", forceLoad: true);
+        CargarInfo(); // Agregar esta línea para recargar la lista de animales
+    }
+    async Task CargarInfo()
+    {
+        var resultado = await animalServices.Consultar(Filtro);
+        if (resultado.Exitoso)
+            Animales = resultado.Datos!;
+    }
+    public async Task<bool> Consultar()
+    {
+        var response = await animalServices.Consultar(Filtro);
+        if(response.Exitoso)
+            Animales = response.Datos!;
+        return true;
+    }
+    protected async override Task OnInitializedAsync()
+    {
+        await Consultar();
+    }
+    public async Task Send()
+    {
+        if (request.Id == 0)
+        {
+            // Verificar si el correo electrónico ya existe en la base de datos
+            var existingUser = Animales.FirstOrDefault(u => u.Arete.Equals(request.Arete, StringComparison.OrdinalIgnoreCase) && !u.Vendido);
+            if (existingUser != null)
+            {
+                // Mostrar mensaje de error porque el correo electrónico ya existe
+                // Aquí puedes establecer una variable de estado para mostrar el mensaje en tu interfaz de usuario
+                // Por ejemplo: 
+                ErrorMessage = "Patron ya existe un animal con este arete 🤨";
+            }
+            else
+            {
+                // Debo registrar el contacto.
+                var r = await animalServices.Registrar(request);
+                if (r.Exitoso)
+                {
+                    Cancelar();
+                    await CargarInfo();
+                    StateHasChanged();
+                }
+            }
+        }
+        else
+        {
+            // Debo solicitar modificar el contacto...
+            var r = await animalServices.Modificar(request);
+            if (r.Exitoso)
+            {
+                Cancelar();
+                await CargarInfo();
+                StateHasChanged();
+            }
+        }
+    }
+  
+}

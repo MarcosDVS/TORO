@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using TORO.Data.Request;
 using TORO.Data.Response;
+using TORO.Authentication;
 
 namespace TORO.Data.Model;
 
@@ -12,6 +13,7 @@ public class User
     public string Apellido { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string Clave { get; set; } = null!;
+    public string Role { get; set; } = null!;
 
 
     
@@ -22,6 +24,7 @@ public class User
         Apellido = user.Apellido,
         Email = user.Email,
         Clave = user.Clave,
+        Role = user.Role
     };
     public bool Modificar(UserRequest user)
     {
@@ -30,6 +33,7 @@ public class User
         if (Apellido != user.Apellido) Apellido = user.Apellido; cambio = true;
         if (Email != user.Email) Email = user.Email; cambio = true;
         if (Clave != user.Clave) Clave = user.Clave; cambio = true;
+        if (Role != user.Role) Role = user.Role; cambio = true;
 
         return cambio;
     }
@@ -40,5 +44,6 @@ public class User
         Apellido = Apellido,
         Email = Email,
         Clave = Clave,
+        Role = Role
     };
 }
