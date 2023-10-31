@@ -6,9 +6,9 @@ namespace TORO.Data.Response;
 public class AnimalResponse
 {
     public int Id { get; set; }
-    public string Arete { get; set; } = null!;
+    public string Arete { get; set; } ="";
     public string Raza { get; set; } = null!;
-    public string Sexo { get; set; } = null!;
+    public string Sexo { get; set; } = "";
     public decimal CostoCompra { get; set; }
     public DateTime FechaNacimiento { get; set; }
     public bool Vendido { get; set; } = false;
