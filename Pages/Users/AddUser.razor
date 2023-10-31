@@ -9,6 +9,8 @@
         <h3 class="card-title"><b>Agregar usuario</b></h3>
         <hr>
         <EditForm Model="request" OnValidSubmit="Send">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
             <div class="mb-3 input-group">
                 <label for="Nombre" class="input-group-text">Nombre</label>
                 <InputText id="Nombre" class="form-control" @bind-Value="@request.Nombre" />
@@ -27,7 +29,7 @@
             </div>
             <!-- Add select for Administrator and User roles -->
             <div class="mb-3 input-group">
-                <label class="input-group-text" for="chkAdministrator">Role</label>
+                <label class="input-group-text" >Role</label>
                 <select name="" id="role" class="form-control" @bind="@request.Role">
                     <option disabled>Seleccione un Role</option>
                     <option value="Administrator">Administrator</option>

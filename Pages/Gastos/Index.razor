@@ -33,6 +33,8 @@
         <h3 class="card-title"><b>@TituloForm</b></h3>
         <hr>
         <EditForm Model="request" OnValidSubmit="Send">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
             <div class="mb-3 input-group">
                 <label for="Fecha" class="input-group-text">Fecha</label>
                 <InputDate id="Fecha" class="form-control" @bind-Value="@request.Fecha" />

@@ -5,6 +5,8 @@
             <h3 class="card-title"><b>Agregar usuario</b></h3>
             <hr>
             <EditForm Model="request" OnValidSubmit="Send">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
                 <div class="mb-3 input-group">
                     <label for="Nombre" class="input-group-text">Nombre</label>
                     <InputText id="Nombre" class="form-control" @bind-Value="@request.Nombre" />

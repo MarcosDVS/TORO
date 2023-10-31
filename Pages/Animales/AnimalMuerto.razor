@@ -31,6 +31,8 @@
             <hr>
 
             <EditForm Model="request" OnValidSubmit="Send">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
                 <div class="mb-3 input-group">
                     <label for="Arete" class="input-group-text">Arete</label>
                     <InputText id="Arete" class="form-control" @bind-Value="@request.Arete" />
@@ -41,7 +43,11 @@
                 </div>
                 <div class="mb-3 input-group">
                     <label for="Sexo" class="input-group-text">Sexo</label>
-                    <InputText id="Sexo" class="form-control" @bind-Value="@request.Sexo" />
+                    <select id="Sexo" class="form-control" @bind="@request.Sexo">
+                        <option disabled="Selecciona un sexo">Selecciona un sexo</option>
+                        <option value="Macho">Macho</option>
+                        <option value="Hembra">Hembra</option>
+                    </select>
                 </div>
                 <div class="mb-3 input-group">
                     <label for="CostoCompra" class="input-group-text">Costo/Compra</label>
@@ -157,13 +163,21 @@
         }
     }
     public void Seleccionar(int Id)
+{
+    ShowForm = true;
+    var selectedAnimal = Animales.FirstOrDefault(c => c.Id == Id);
+    if (selectedAnimal != null)
     {
-        ShowForm = true;
-        request = Animales
-        .Where(c => c.Id == Id)
-        .Select(c => c.ToRequest())
-        .FirstOrDefault() ?? new LostAnimalRequest();
+        request.Id = selectedAnimal.Id;
+        request.Arete = selectedAnimal.Arete;
+        request.Raza = selectedAnimal.Raza;
+        request.Sexo = selectedAnimal.Sexo;
+        request.CostoCompra = selectedAnimal.CostoCompra;
+        request.FechaNacimiento = selectedAnimal.FechaNacimiento;
+        request.FechaMuerte = selectedAnimal.FechaMuerte;
+        // Asegúrate de que las propiedades del modelo request se asignen correctamente
     }
+}
     public async Task Send()
     {
         if (request.Id == 0 )

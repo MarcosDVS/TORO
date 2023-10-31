@@ -23,11 +23,11 @@
             <form>
                 <div class="form-group">
                     <label for="username"><b>Nombre de usuario</b></label>
-                    <input type="text" class="form-control" @bind="model.UserName">
+                    <input type="email" class="form-control" @bind="model.UserName" placeholder="User Name">
                 </div>
                 <div class="form-group mb-3">
                     <label for="password"><b>Contraseña</b></label>
-                    <input type="password" class="form-control" @bind="model.Password">
+                    <input type="password" class="form-control" @bind="model.Password" placeholder="Password">
                 </div>
                 <div class="d-flex justify-content-center mb-3">
                     <div class="btn-group">
@@ -64,47 +64,32 @@
 
     private async Task Authenticate()
     {
-        var userAccount = userAccountService.GetByUserName(model.UserName);
-        if(userAccount == null || userAccount.Clave != model.Password)
+        if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
         {
-            await js.InvokeVoidAsync("Alert", "Invalid User Name or Password");
-            return;
+            mensajeError = "Pero Papá, Complete Los Campos 😒❌";
         }
-
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-        await customAuthStateProvider.UpdateAuthenticationState(new UserSession
+        else
+        {
+            var userAccount = userAccountService.GetByUserName(model.UserName);
+            if(userAccount == null || userAccount.Clave != model.Password)
             {
-                UserName = userAccount.Email,
-                Role = userAccount.Role
-            });
-        urlHelper.NavigateTo("/animal", true);
+                mensajeError = "Calanco, Las Credenciales Son Incorrectas 😒❌";
+                return;
+            }
+
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(new UserSession
+                {
+                    UserName = userAccount.Email,
+                    Role = userAccount.Role
+                });
+            urlHelper.NavigateTo("/animal", true);
+        }
+        
     }
 
     void CrearUsuario()
     {
         urlHelper.NavigateTo("/usuario/crear");
     }
-
-    private async Task IniciarSesion()
-{
-    if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
-    {
-        mensajeError = "Pero Papá, Complete Los Campos 😒❌";
-    }
-    else
-    {
-        var resultado = await userServices.Login(model.UserName, model.Password);
-        if (resultado.Exitoso)
-        {
-            // Login exitoso, redirige a una página protegida (e.g., /animal)
-            urlHelper.NavigateTo("/animal");
-        }
-        else
-        {
-            mensajeError = "Calanco, Las Credenciales Son Incorrectas 😒❌";
-        }
-    }
-}
-
-
 }
