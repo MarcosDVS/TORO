@@ -44,7 +44,9 @@
                     <h5 class="card-title"><b>@SelectedUser.Nombre @SelectedUser.Apellido</b></h5>
                     <p class="card-text">
                         <b>Usuario:</b> @SelectedUser.Email
+                        <br>
                         <b>Clave:</b> @SelectedUser.Clave
+                        <br>
                         <b>Role:</b> @SelectedUser.Role
                     </p>
                     <button @onclick="()=>Editar(SelectedUser)" class="btn btn-outline-primary">
@@ -197,6 +199,8 @@
         IsUser = false;
         request = new UserRequest();
         ShowForm = false;
+        // Recargar la página actual
+        urlHelper.NavigateTo(urlHelper.Uri, forceLoad: true);
     }
     async Task CargarUsuarios()
     {

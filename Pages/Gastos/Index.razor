@@ -130,6 +130,8 @@
     {
         request = new GastoRequest();
         ShowForm = false;
+        // Recargar la página actual
+        urlHelper.NavigateTo(urlHelper.Uri, forceLoad: true);
     }
     async Task CargarInfo()
     {
