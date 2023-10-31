@@ -1,6 +1,7 @@
 @page "/factura/crear"
 @using TORO.Data.Request;
 @using TORO.Data.Response;
+@attribute [Authorize(Roles = "Administrator,User")]
 
 <MenuDisplay />
 <hr>
@@ -178,21 +179,24 @@
     }
     void AgregarAlDetalle()
     {
-        var r = Animales.FirstOrDefault(p => p.Id == IdAnimal);
-        var detalle = facturaRequest.Detalles.FirstOrDefault(d => d.AnimalId == IdAnimal);
-        if (detalle != null)
+        var r = Animales?.FirstOrDefault(p => p.Id == IdAnimal); // Agrega el operador de null condicional ? para Animales
+        if (r != null)
         {
-            detalle.Cantidad += Cantidad;
-        }
-        else
-        {
-            facturaRequest.Detalles.Add(new()
+            var detalle = facturaRequest.Detalles.FirstOrDefault(d => d.AnimalId == IdAnimal);
+            if (detalle != null)
+            {
+                detalle.Cantidad += Cantidad;
+            }
+            else
+            {
+                facturaRequest.Detalles.Add(new()
                 {
                     AnimalId = IdAnimal,
-                    Descripcion = r!.Arete + " " + r!.Raza+" "+r!.Sexo,
+                    Descripcion = r!.Arete + " " + r!.Raza + " " + r!.Sexo,
                     Precio = detalleFacturaRequest.Precio,
                     Cantidad = Cantidad
                 });
+            }
         }
     }
 
