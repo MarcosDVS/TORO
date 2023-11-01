@@ -87,7 +87,11 @@
                     </div>
                     <div class="mb-3 input-group">
                         <label for="Clave" class="input-group-text">Clave</label>
-                        <InputText id="Clave" class="form-control" @bind-Value="@request.Clave" />
+                        <InputText id="Clave" type="password" class="form-control" @bind-Value="@request.Clave" />
+                    </div>
+                    <div class="mb-3 input-group">
+                        <label for="ConfirmarClave" class="input-group-text">Confirmar Clave</label>
+                        <InputText id="ConfirmarClave" type="password" class="form-control" @bind-Value="@confirmarClave" />
                     </div>
                     <!-- Add select for Administrator and User roles -->
                     <div class="mb-3 input-group">
@@ -172,6 +176,7 @@
     // Add these properties to track the checkbox states and set the Role property accordingly
     private bool IsAdministrator { get; set; }
     private bool IsUser { get; set; }
+    public string confirmarClave { get; set; } = "";
 
     private void SetRole()
     {
@@ -238,6 +243,12 @@
     {
         if (request.Id == 0)
         {
+            if (request.Clave != confirmarClave)
+            {
+                // Mostrar mensaje de error porque las claves no coinciden
+                ErrorMessage = "Las claves no concuerdan";
+                return;
+            }
             //Debo registrar el contacto..
             var r = await userServices.Crear(request);
             if (r.Exitoso)
@@ -250,6 +261,12 @@
         }
         else
         {
+            if (request.Clave != confirmarClave)
+            {
+                // Mostrar mensaje de error porque las claves no coinciden
+                ErrorMessage = "Las claves no concuerdan";
+                return;
+            }
             //Debo solicitar modificar el contacto...
             var r = await userServices.Modificar(request);
             if (r.Exitoso)

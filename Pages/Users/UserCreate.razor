@@ -17,31 +17,38 @@
                 </div>
                 <div class="mb-3 input-group">
                     <label for="Usuario" class="input-group-text">Usuario</label>
-                    <InputText id="Usuario" class="form-control" @bind-Value="@request.Email" />
+                    <InputText id="Usuario" type="email" class="form-control" @bind-Value="@request.Email" />
                 </div>
                 <div class="mb-3 input-group">
                     <label for="Clave" class="input-group-text">Clave</label>
-                    <InputText id="Clave" class="form-control" @bind-Value="@request.Clave" />
+                    <InputText id="Clave" type="password" class="form-control" @bind-Value="@request.Clave" />
                 </div>
-                
+                <div class="mb-3 input-group">
+                    <label for="ConfirmarClave" class="input-group-text">Confirmar Clave</label>
+                    <InputText id="ConfirmarClave" type="password" class="form-control" @bind-Value="@confirmarClave" />
+                </div>
+
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-outline-primary">Guardar</button>
                     <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
                 </div>
             </EditForm>
         </div>
+        <!-- Luego, en tu formulario, puedes mostrar ErrorMessage cuando sea necesario -->
+        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+        {
+            <div class="alert alert-danger" role="alert">@ErrorMessage</div>
+        }
 </div>
-<!-- Luego, en tu formulario, puedes mostrar ErrorMessage cuando sea necesario -->
-@if (!string.IsNullOrWhiteSpace(ErrorMessage))
-{
-    <div class="alert alert-danger" role="alert">@ErrorMessage</div>
-}
+
 @code
 {
     public string Filtro { get; set; } = "";
     public List<UserResponse> Users { get; set; }
         = new List<UserResponse>();
     public UserRequest request { get; set; } = new UserRequest();
+    public string confirmarClave { get; set; } = "";
+
     public string ErrorMessage { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
@@ -72,6 +79,12 @@
             }
             else
             {
+                if (request.Clave != confirmarClave)
+                {
+                    // Mostrar mensaje de error porque las claves no coinciden
+                    ErrorMessage = "Las claves no concuerdan";
+                    return;
+                }
                 // Verificar si ya existen usuarios en la base de datos
                 var hasExistingUsers = Users.Any();
 
@@ -94,17 +107,6 @@
                     await CargarUsuarios();
                     StateHasChanged();
                 }
-            }
-        }
-        else
-        {
-            // Debo solicitar modificar el contacto...
-            var r = await userServices.Modificar(request);
-            if (r.Exitoso)
-            {
-                Cancelar();
-                await CargarUsuarios();
-                StateHasChanged();
             }
         }
     }

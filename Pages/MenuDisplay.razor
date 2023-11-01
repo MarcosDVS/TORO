@@ -1,7 +1,7 @@
 @using TORO.Authentication;
 @inject AuthenticationStateProvider authStateProvider
 
-<nav class="navbar navbar-expand-lg bg-dark">
+<nav class="navbar navbar-expand-lg navbar-expand-md bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand">
       <img src="toro.png" style="height: 50px; width: 50px; "> 
@@ -48,6 +48,15 @@
                 <img src="cerrar-sesion.png" style="height: 27px; width: 27px; ">
                 <span aria-hidden="true"></span> LogOut
             </a>
+        </li> 
+        <li class="nav-item ml-auto">
+          <AuthorizeView>
+            <Authorized>
+              <a class="nav-link active">
+                @context.User.Identity.Name!
+              </a>
+            </Authorized>
+          </AuthorizeView>
         </li>
         
       </ul>
