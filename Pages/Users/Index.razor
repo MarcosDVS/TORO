@@ -1,4 +1,5 @@
 @page "/usuarios"
+
 @attribute [Authorize(Roles = "Administrator,User")]
 
 <MenuDisplay />
@@ -88,10 +89,6 @@
                     <div class="mb-3 input-group">
                         <label for="Clave" class="input-group-text">Clave</label>
                         <InputText id="Clave" type="password" class="form-control" @bind-Value="@request.Clave" />
-                    </div>
-                    <div class="mb-3 input-group">
-                        <label for="ConfirmarClave" class="input-group-text">Confirmar Clave</label>
-                        <InputText id="ConfirmarClave" type="password" class="form-control" @bind-Value="@confirmarClave" />
                     </div>
                     <!-- Add select for Administrator and User roles -->
                     <div class="mb-3 input-group">
@@ -243,12 +240,6 @@
     {
         if (request.Id == 0)
         {
-            if (request.Clave != confirmarClave)
-            {
-                // Mostrar mensaje de error porque las claves no coinciden
-                ErrorMessage = "Las claves no concuerdan";
-                return;
-            }
             //Debo registrar el contacto..
             var r = await userServices.Crear(request);
             if (r.Exitoso)
