@@ -1,95 +1,51 @@
 ﻿@page "/"
-@using TORO.Authentication;
-@inject IUserAccountService userAccountService
-@inject IJSRuntime js
-@inject AuthenticationStateProvider authStateProvider
 
-<br/>
-<br/>
-<br/>
-<div class="container">
+<div class="hacienda-page">
+    <header>
+        <h1>Hacienda Vargas</h1>
+    </header>
     
-    <div class="row justify-content-center">
-        <div class="card mb-2" style="width:20rem;">
-            <br />
-            <div style="display: flex; justify-content: center;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
-                </svg>
-                <br />
-            </div>
-            <h2 style="display: flex; justify-content: center;">Iniciar Sesión</h2>
-            <form>
-                <div class="form-group">
-                    <label for="username"><b>Nombre de usuario</b></label>
-                    <input type="email" class="form-control" @bind="model.UserName" placeholder="User Name">
-                </div>
-                <div class="form-group mb-3">
-                    <label for="password"><b>Contraseña</b></label>
-                    <input type="password" class="form-control" @bind="model.Password" placeholder="Password">
-                </div>
-                <div class="d-flex justify-content-center mb-3">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-primary" @onclick="Authenticate">Iniciar sesión</button>
-                        <button type="button" class="btn btn-secondary" @onclick="CrearUsuario">Crear Usuario</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+    <div class="content">
+        <AuthorizeView>
+            <Authorized>
+                <h3 class="welcome-message">Hello, @context.User.Identity.Name!</h3>
+            </Authorized>
+            <NotAuthorized>
+                <h3 class="welcome-message">Hello, Guest!</h3>
+            </NotAuthorized>
+        </AuthorizeView>
+        <img src="toros.png" alt="" style="height: 250px;">
     </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    @if (!string.IsNullOrEmpty(mensajeError))
-    {
-        <div class="alert alert-danger mt-3" role="alert">
-            @mensajeError
-        </div>
-    }
 </div>
 
-@code 
-{
-    private string mensajeError = "";
-    private LoginModel model = new LoginModel();
-
-    private class LoginModel
-    {
-        public string UserName { get; set; }
-        public string Password { get; set; }
+<style>
+    .hacienda-page {
+        background-color: rgb(17, 17, 17); /* Color arena para dar un toque de la naturaleza */
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
     }
 
-    private async Task Authenticate()
-    {
-        if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
-        {
-            mensajeError = "Pero Papá, Complete Los Campos 😒❌";
-        }
-        else
-        {
-            var userAccount = userAccountService.GetByUserName(model.UserName);
-            if(userAccount == null || userAccount.Clave != model.Password)
-            {
-                mensajeError = "Calanco, Las Credenciales Son Incorrectas 😒❌";
-                return;
-            }
-
-            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-            await customAuthStateProvider.UpdateAuthenticationState(new UserSession
-                {
-                    UserName = userAccount.Email,
-                    Role = userAccount.Role
-                });
-            urlHelper.NavigateTo("/animal", true);
-        }
-        
+    header {
+        background-color: rgb(0, 0, 39); /* Marrón oscuro para evocar madera */
+        color: #FFF;
+        padding: 20px;
     }
 
-    void CrearUsuario()
-    {
-        urlHelper.NavigateTo("/usuario/crear");
+    h1 {
+        font-size: 2.5rem;
+        font-family: 'Cinzel', serif;
     }
-}
+
+    .content {
+        background-color: black;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px;
+    }
+
+    .welcome-message {
+        font-size: 1.5rem;
+    }
+</style>
+

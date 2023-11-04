@@ -1,13 +1,35 @@
-﻿
+﻿@using TORO.Authentication;
+@inject AuthenticationStateProvider authStateProvider
 @inherits LayoutComponentBase
 
 <PageTitle>TORO</PageTitle>
 
 <div class="page">
-    
+    <div class="sidebar" >
+        <NavMenu />
+    </div>
 
     <main>
-        
+        <div class="top-row px-4" style="background-color: rgb(0, 0, 0);">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            
+            <AuthorizeView>
+            <Authorized>
+                <a class="nav-link active">
+                    @context.User.Identity.Name!
+                </a>
+                <a class="nav-link active" href="javascript:void(0)" @onclick="Logout">
+                    <img src="cerrar-sesion.png" style="height: 20px; width: 20px; ">
+                    <span aria-hidden="true"></span> LogOut
+                </a>
+            </Authorized>
+            <NotAuthorized>
+                <a class="nav-link active" href="login">
+                    LogIn
+                </a>
+            </NotAuthorized>
+          </AuthorizeView>
+        </div>
         <article class="content px-4">
             @Body
         </article>
@@ -16,5 +38,14 @@
 
 @code
 {
-    
+    private async Task Logout()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        urlHelper.NavigateTo("/", true);
+    }
+    private async Task LogIn()
+    {
+        urlHelper.NavigateTo("/login", true);
+    }
 }
