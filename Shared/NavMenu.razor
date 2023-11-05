@@ -1,4 +1,4 @@
-﻿<div class="top-row ps-3 navbar navbar-dark" style="background-color: rgb(0, 0, 39); color: #FFF;">
+﻿<div class="top-row ps-3 navbar navbar-dark" style="background-color: rgb(0, 0, 0); color: #FFF;">
     <div class="container-fluid">
         <a class="navbar-brand" href="">TORO</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -7,7 +7,7 @@
     </div>
 </div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu" style="background-color: rgb(0, 0, 53); color: #FFF;">
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu" style="background-color: rgb(0, 0, 0); color: #FFF;">
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All" style="color: #d7d7d7;">
@@ -18,33 +18,27 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="animal" style="color: #d7d7d7;">
-                        <img src="toro.png" style="height: 30px; width: 30px;">
-                        <span class="oi" aria-hidden="true"></span> Bovinos Vivos
+                        <span aria-hidden="true"></span> Bovinos Vivos
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="animal/perdido" style="color: #d7d7d7;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-emoji-dizzy" viewBox="0 0 16 16">
-                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                            <path d="M9.146 5.146a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 1 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 0-.708zm-5 0a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 1 1 .708.708l-.647.646.647.646a.5.5 0 1 1-.708.708L5.5 7.207l-.646.647a.5.5 0 1 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 0-.708zM10 11a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
-                        </svg>
-                        <span class="oi" aria-hidden="true"></span> Bovinos Perdidos
+                        <span aria-hidden="true"></span> Bovinos Perdidos
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="gasto" style="color: #d7d7d7;">
-                        <span class="oi oi-dollar" aria-hidden="true"></span> Gastos
+                        <span aria-hidden="true"></span> Gastos
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="usuarios" style="color: #d7d7d7;">
-                        <span class="oi oi-people" aria-hidden="true"></span> Usuarios
+                        <span aria-hidden="true"></span> Usuarios
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="factura" style="color: #d7d7d7;">
-                        <img src="factura.png" style="height: 25px; width: 25px;">
-                        <span class="oi oi-bill" aria-hidden="true"></span> Facturar
+                        <span aria-hidden="true"></span> Facturar
                     </NavLink>
                 </div>
             </Authorized>
