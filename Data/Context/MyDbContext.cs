@@ -49,7 +49,7 @@ public class MyDbContext : DbContext, IMyDbContext
         return base.SaveChangesAsync(cancellationToken);
     }
 
-    internal UserAccount? FirstOrDefault(Func<object, bool> value)
+    internal User? FirstOrDefault(Func<object, bool> value)
     {
         throw new NotImplementedException();
     }
