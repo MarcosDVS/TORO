@@ -49,7 +49,10 @@ else
     </div>
 }
 <hr>
-<h3 class="card-title"><b>@TituloForm</b></h3>
+@if(!ShowDetails)
+{
+    <h3 class="card-title"><b>@TituloForm</b></h3>
+}
 <div class="container">
     @if(ShowDetails)
     {
@@ -61,7 +64,6 @@ else
                     <th scope="col">Descripción</th>
                     <th scope="col">ITBIS</th>
                     <th scope="col">Precio</th>
-                    <th scope="col">...</th>
                 </tr>
             </thead>
             <tbody>
@@ -101,6 +103,7 @@ else
                     <th scope="col">ITBIS</th>
                     <th scope="col">Monto</th>
                     <th scope="col">Fecha</th>
+                    <th>...</th>
                 </tr>
             </thead>
             <tbody>
