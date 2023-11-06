@@ -84,6 +84,44 @@ namespace TORO.Data.Services;
             return new Result() { Mensaje = E.Message, Exitoso = false };
         }
     }
+    public async Task<Result<List<FacturaRespose>>> BuscarFacturas(string cliente, DateTime? fecha)
+    {
+        try
+        {
+            var query = dbContext.Facturas
+                .Include(f => f.Detalles)
+                .ThenInclude(d => d.Animal)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(cliente))
+            {
+                query = query.Where(f => f.Cliente.Contains(cliente));
+            }
+
+            if (fecha.HasValue)
+            {
+                query = query.Where(f => EF.Functions.DateDiffDay(f.Fecha, fecha.Value) == 0);
+            }
+
+            var facturas = await query.Select(f => f.ToResponse()).ToListAsync();
+
+            return new Result<List<FacturaRespose>>()
+            {
+                Datos = facturas,
+                Exitoso = true,
+                Mensaje = "Búsqueda exitosa"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<List<FacturaRespose>>()
+            {
+                Datos = null,
+                Exitoso = false,
+                Mensaje = ex.Message
+            };
+        }
+    }
 
 }
 
@@ -92,4 +130,5 @@ namespace TORO.Data.Services;
         Task<Result<List<FacturaRespose>>> Consultar();
         Task<Result<FacturaRespose>> Crear(FacturaRequest request);
          Task<Result> Eliminar(FacturaRequest request);
+        Task<Result<List<FacturaRespose>>> BuscarFacturas(string cliente, DateTime? fecha);
     }

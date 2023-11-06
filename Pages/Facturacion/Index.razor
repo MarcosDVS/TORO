@@ -14,18 +14,25 @@
 <hr>
 @if(!ShowDetails)
 {
-    <div class="row">
-        <div class="col">
-            <h3 class="card-title"><b>@TituloForm</b></h3>
+    <form @onsubmit="BuscarFacturas">
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <input type="text" class="form-control" @bind="clienteFiltro" placeholder="Nombre del Cliente">
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" @bind="fechaFiltro">
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-outline-primary">Buscar</button>
+            </div>
+            <div class="col-md-1">
+                <button class="btn btn-outline-success" 
+                    @onclick='CrearFactura'>
+                    <span class="oi oi-plus"></span>
+                </button>
+            </div>
         </div>
-        <div class="col">
-            <button 
-                class="btn btn-outline-success" 
-                @onclick='CrearFactura'>
-                <span class="oi oi-plus"></span>
-            </button>
-        </div>
-    </div>
+    </form>
 }
 else
 {
@@ -42,6 +49,7 @@ else
     </div>
 }
 <hr>
+<h3 class="card-title"><b>@TituloForm</b></h3>
 <div class="container">
     @if(ShowDetails)
     {
@@ -53,6 +61,7 @@ else
                     <th scope="col">Descripción</th>
                     <th scope="col">ITBIS</th>
                     <th scope="col">Precio</th>
+                    <th scope="col">...</th>
                 </tr>
             </thead>
             <tbody>
@@ -134,12 +143,23 @@ else
 </div>
 @code
 {
+    public string clienteFiltro { get; set; }
+    public DateTime? fechaFiltro { get; set; }
     public string TituloForm => ShowDetails == false ?
     "Módulo de facturación" : "Reporte de facturaciones";
     public bool ShowDetails { get; set; } = false;
     public List<FacturaRespose> Facturas { get; set; } = new List<FacturaRespose>();
     public List<FacturaDetalleResponse> FacturaDetalles { get; set; } = new List<FacturaDetalleResponse>();
     public FacturaRespose? SelectedFactura { get; set; } // Factura seleccionada
+    public async Task BuscarFacturas()
+    {
+        var resultado = await facturaServices.BuscarFacturas(clienteFiltro, fechaFiltro);
+        if (resultado.Exitoso)
+        {
+            Facturas = resultado.Datos ?? new List<FacturaRespose>();
+        }
+        StateHasChanged();
+    }
 
     void CrearFactura()
     {
