@@ -139,7 +139,16 @@
     </div>
 </EditForm>
 
+<style>
+    .table th{
+    border: 1px solid #000000;
+    
+    }
 
+    .table thead {
+        background-color: rgb(0, 0, 0);
+    }
+</style>
 
 @code {
     public string? Message { get; set; } = null;
@@ -165,7 +174,14 @@
     protected override async Task OnInitializedAsync()
     {
         await CargarProducto();
+        
+        // Verifica si hay al menos un animal disponible
+        if (Animales.Count > 0)
+        {
+            IdAnimal = Animales[0].Id; // Inicializa con el primer animal en la lista
+        }
     }
+
 
     void EliminarDetalle(int Id)
     {
