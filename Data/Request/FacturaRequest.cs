@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using TORO.Data.Model;
 
 namespace TORO.Data.Request;
@@ -5,6 +6,8 @@ namespace TORO.Data.Request;
 public class FacturaRequest
 {
     public int Id { get; set; }
+    
+    [Required(ErrorMessage = "El nombre del cliente es obligatorio")]
     public string Cliente { get; set; }
     public DateTime Fecha { get; set; } = DateTime.Now;
     public virtual ICollection<FacturaDetalleRequest> Detalles { get; set; } 

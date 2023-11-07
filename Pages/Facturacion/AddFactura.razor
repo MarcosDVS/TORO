@@ -6,8 +6,13 @@
 <hr>
 <!-- Agregar el diseño de la página aquí -->
 <h3><b>Registro de Factura</b></h3>
+@if (!string.IsNullOrWhiteSpace(Message))
+{
+    <div class="alert alert-danger" role="alert">@Message</div>
+}
 <EditForm Model="facturaRequest" OnValidSubmit="Send">
     <DataAnnotationsValidator />
+    <ValidationSummary />
 
     <div class="row">
         <div class="col-md-6">
@@ -29,7 +34,7 @@
             <div class="form-group">
                 <label for="AnimalId">ID del Animal:</label>
                 <select class="form-control" @bind="IdAnimal">
-                    <option disabled>Selecciona una ciudad</option>
+                    <option disabled>Selecciona un animal</option>
                     @foreach (var animal in Animales)
                     {
                         @if(!animal.Vendido)
@@ -96,7 +101,7 @@
                             class="form-control" 
                             @bind-Value="@detalle.Cantidad" />
                     </td>
-                    <td class="col w-100">
+                    <td class="col w-50">
                         @detalle.Descripcion
                     </td>
                     <td>
@@ -182,7 +187,6 @@
         }
     }
 
-
     void EliminarDetalle(int Id)
     {
         var detalle = facturaRequest.Detalles
@@ -194,23 +198,32 @@
     }
     void AgregarAlDetalle()
     {
-        var r = Animales?.FirstOrDefault(p => p.Id == IdAnimal); // Agrega el operador de null condicional ? para Animales
+        var r = Animales?.FirstOrDefault(p => p.Id == IdAnimal);
+
         if (r != null)
         {
-            var detalle = facturaRequest.Detalles.FirstOrDefault(d => d.AnimalId == IdAnimal);
-            if (detalle != null)
+            if (detalleFacturaRequest.Precio >= 15000) // Verifica el precio
             {
-                detalle.Cantidad += Cantidad;
+                var detalle = facturaRequest.Detalles.FirstOrDefault(d => d.AnimalId == IdAnimal);
+
+                if (detalle != null)
+                {
+                    detalle.Cantidad += Cantidad;
+                }
+                else
+                {
+                    facturaRequest.Detalles.Add(new()
+                    {
+                        AnimalId = IdAnimal,
+                        Descripcion = r!.Arete + " " + r!.Raza + " " + r!.Sexo,
+                        Precio = detalleFacturaRequest.Precio,
+                        Cantidad = Cantidad
+                    });
+                }
             }
             else
             {
-                facturaRequest.Detalles.Add(new()
-                {
-                    AnimalId = IdAnimal,
-                    Descripcion = r!.Arete + " " + r!.Raza + " " + r!.Sexo,
-                    Precio = detalleFacturaRequest.Precio,
-                    Cantidad = Cantidad
-                });
+                Message = "El precio del animal debe ser de RD$15,000 o más";
             }
         }
     }
