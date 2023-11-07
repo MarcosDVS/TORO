@@ -6,7 +6,7 @@ body {
 }
 
 /* Establecer el color del texto en blanco */
-h1, h2, h3, h4, h5, p, th, td, label {
+h1, h2, h3, h4, h5, p, th, td, li, label {
     color: white;
 }
 /* site.css */
