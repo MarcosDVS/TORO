@@ -1,0 +1,122 @@
+@page "/usuario/crear"
+@using TORO.Data.Request;
+@using TORO.Data.Response;
+
+<div class="card">
+        <div class="card-body">
+            <h3 class="card-title"><b>Agregar usuario</b></h3>
+            <hr>
+            <EditForm Model="request" OnValidSubmit="Send">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="mb-3 input-group">
+                    <label for="Nombre" class="input-group-text">Nombre</label>
+                    <InputText id="Nombre" class="form-control" @bind-Value="@request.Nombre" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="Apellido" class="input-group-text">Apellido</label>
+                    <InputText id="Apellido" class="form-control" @bind-Value="@request.Apellido" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="Usuario" class="input-group-text">Usuario</label>
+                    <InputText id="Usuario" type="email" class="form-control" @bind-Value="@request.Email" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="Clave" class="input-group-text">Clave</label>
+                    <InputText id="Clave" type="password" class="form-control" @bind-Value="@request.Clave" />
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="ConfirmarClave" class="input-group-text">Confirmar Clave</label>
+                    <InputText id="ConfirmarClave" type="password" class="form-control" @bind-Value="@confirmarClave" />
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                    <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
+                </div>
+            </EditForm>
+        </div>
+        <!-- Luego, en tu formulario, puedes mostrar ErrorMessage cuando sea necesario -->
+        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+        {
+            <div class="alert alert-danger" role="alert">@ErrorMessage</div>
+        }
+</div>
+
+@code
+{
+    public string Filtro { get; set; } = "";
+    public List<UserResponse> Users { get; set; }
+        = new List<UserResponse>();
+    public UserRequest request { get; set; } = new UserRequest();
+    public string confirmarClave { get; set; } = "";
+
+    public string ErrorMessage { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarUsuarios();
+    }
+    async Task CargarUsuarios()
+    {
+        var resultado =
+        await userServices.Consultar(Filtro);
+        if (resultado.Exitoso)
+        {
+            Users = resultado.Datos!;
+        }
+    }
+    public async Task Send()
+    {
+        if (request.Id == 0)
+        {
+            // Verificar si el correo electrónico ya existe en la base de datos
+            var existingUser = Users.FirstOrDefault(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
+            if (existingUser != null)
+            {
+                // Mostrar mensaje de error porque el correo electrónico ya existe
+                // Aquí puedes establecer una variable de estado para mostrar el mensaje en tu interfaz de usuario
+                // Por ejemplo: 
+                ErrorMessage = "Patron el correo electrónico ya existe 🤨";
+            }
+            else
+            {
+                if (request.Clave != confirmarClave)
+                {
+                    // Mostrar mensaje de error porque las claves no coinciden
+                    ErrorMessage = "Las claves no concuerdan";
+                    return;
+                }
+                // Verificar si ya existen usuarios en la base de datos
+                var hasExistingUsers = Users.Any();
+
+                if (hasExistingUsers)
+                {
+                    // Si ya existen usuarios, establece Role en "User"
+                    request.Role = "User";
+                }
+                else
+                {
+                    // Si no existen usuarios, establece Role en "Administrator"
+                    request.Role = "Administrator";
+                }
+
+                // Debo registrar el contacto.
+                var r = await userServices.Crear(request);
+                if (r.Exitoso)
+                {
+                    Cancelar();
+                    await CargarUsuarios();
+                    StateHasChanged();
+                }
+            }
+        }
+    }
+
+    void Cancelar()
+    {
+        request = new UserRequest();
+        urlHelper.NavigateTo("/", forceLoad: true);
+    }
+ 
+}
