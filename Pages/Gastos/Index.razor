@@ -85,7 +85,7 @@
                 @foreach (var item in Gastos)
                 {
                     <tr>
-                        <td>@item.Fecha</td>
+                        <td>@item.Fecha.ToShortDateString()</td>
                         <td>@item.Detalle</td>
                         <td>@item.Cantidad</td>
                         <td>@item.Costo.ToString("C2")</td>

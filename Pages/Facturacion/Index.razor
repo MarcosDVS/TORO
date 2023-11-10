@@ -118,7 +118,7 @@ else
                             </span>
                         </td>
                         <td>@factura.SubTotal.ToString("C2")</td>
-                        <td>@factura.Fecha</td>
+                        <td>@factura.Fecha.ToShortDateString()</td>
                         <td>
                             <AuthorizeView Roles="Administrator">
                                 <Authorized>

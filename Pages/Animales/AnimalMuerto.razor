@@ -100,8 +100,8 @@
                         <td>@item.Raza</td>
                         <td>@item.Sexo</td>
                         <td>@item.CostoCompra.ToString("C2")</td>
-                        <td>@item.FechaNacimiento</td>
-                        <td>@item.FechaMuerte</td>
+                        <td>@item.FechaNacimiento.ToShortDateString()</td>
+                        <td>@item.FechaMuerte.ToShortDateString()</td>
                         <td>
                             <AuthorizeView Roles="Administrator">
                                 <Authorized>
