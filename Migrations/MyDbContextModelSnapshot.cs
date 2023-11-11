@@ -168,6 +168,23 @@ namespace TORO.Migrations
                     b.ToTable("LostAnimals");
                 });
 
+            modelBuilder.Entity("TORO.Data.Model.Raza", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Razas");
+                });
+
             modelBuilder.Entity("TORO.Data.Model.User", b =>
                 {
                     b.Property<int>("Id")
