@@ -1,23 +1,28 @@
-﻿@using TORO.Authentication;
+﻿@using System.Security.Claims
+@using TORO.Authentication;
 @inject AuthenticationStateProvider authStateProvider
 @inherits LayoutComponentBase
 
 <PageTitle>TORO</PageTitle>
 
 <div class="page">
-    <div class="sidebar" >
+    <div class="sidebar d-print-none" >
         <NavMenu />
     </div>
 
     <main>
         <div class="top-row px-4" style="background-color: rgb(0, 0, 3);">
-            <a href="about">About</a>
+            <AuthorizeView>
+                <Authorized>
+                    <a class="nav-link active">
+                        @context.User.FindFirstValue(ClaimTypes.GivenName)
+                    </a>
+                </Authorized>
+            </AuthorizeView>
+            <a href="about" >About</a>
             
             <AuthorizeView>
             <Authorized>
-                <a class="nav-link active">
-                    @context.User.Identity.Name!
-                </a>
                 <a class="nav-link active" href="javascript:void(0)" @onclick="Logout">
                     <img src="cerrar-sesion.png" style="height: 20px; width: 20px; ">
                     <span aria-hidden="true"></span> LogOut

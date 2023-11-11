@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using System.Security.Claims
 
 <div class="hacienda-page">
     <header>
@@ -8,7 +9,7 @@
     <div class="content">
         <AuthorizeView>
             <Authorized>
-                <h3 class="welcome-message">Hello, @context.User.Identity.Name!</h3>
+                <h3 class="welcome-message">Hello, @context.User.FindFirstValue(ClaimTypes.GivenName)</h3>
             </Authorized>
             <NotAuthorized>
                 <h3 class="welcome-message">Hello, Guest!</h3>

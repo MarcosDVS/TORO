@@ -79,6 +79,7 @@
             await customAuthStateProvider.UpdateAuthenticationState(new UserSession
                 {
                     UserName = userAccount.Email,
+                    Name = userAccount.Nombre+" "+userAccount.Apellido,
                     Role = userAccount.Role
                 });
             urlHelper.NavigateTo("/", true);
