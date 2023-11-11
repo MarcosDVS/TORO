@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
-#region Configuracion de la base de datos SQLite
+#region Configuracion de la base de datos SQLserver
 builder.Services.AddDbContext<MyDbContext>();
 builder.Services.AddScoped<IMyDbContext,MyDbContext>();
 #endregion
