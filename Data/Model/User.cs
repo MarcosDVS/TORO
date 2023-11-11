@@ -15,9 +15,6 @@ public class User
     public string Clave { get; set; } = null!;
     public string Role { get; set; } = null!;
 
-
-    
-
     public static User Crear(UserRequest user) => new()
     {
         Nombre = user.Nombre,

@@ -11,6 +11,7 @@ public interface IMyDbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Animal> Animals { get; set; }
+    public DbSet<Raza> Razas { get; set; }
     public DbSet<LostAnimal> LostAnimals { get; set; }
     public DbSet<Gasto> Gastos { get; set; }
     public DbSet<Factura> Facturas { get; set; }
@@ -32,6 +33,7 @@ public class MyDbContext : DbContext, IMyDbContext
     #region Tablas
     public DbSet<User> Users { get; set; }
     public DbSet<Animal> Animals { get; set; }
+    public DbSet<Raza> Razas { get; set; }
     public DbSet<LostAnimal> LostAnimals { get; set; }
     public DbSet<Gasto> Gastos { get; set; }
     public DbSet<Factura> Facturas { get; set; }
