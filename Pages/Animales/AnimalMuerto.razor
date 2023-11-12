@@ -30,7 +30,10 @@
 }
 
 <div class="container">
-    <h5><b>Perdidas en bovinos</b> (@Animales.Sum(c => c.CostoCompra).ToString("C2"))</h5>
+    @if (!ShowForm)
+    {
+        <h5><b>Perdidas en bovinos</b> (@Animales.Sum(c => c.CostoCompra).ToString("C2"))</h5>
+    }
     @if (ShowForm)
     {
         <div class="card">
@@ -47,7 +50,15 @@
                 </div>
                 <div class="mb-3 input-group">
                     <label for="Raza" class="input-group-text">Raza</label>
-                    <InputText id="Raza" class="form-control" @bind-Value="@request.Raza" />
+                    <select id="Sexo" class="form-control" @bind="@request.Raza">
+                        <option disabled="Selecciona un sexo">Selecciona una raza</option>
+                        @foreach(var raza in Razas)
+                        {
+                            <option value="@raza.Nombre">
+                                @raza.Nombre 
+                            </option>
+                        }
+                    </select>
                 </div>
                 <div class="mb-3 input-group">
                     <label for="Sexo" class="input-group-text">Sexo</label>
@@ -80,6 +91,28 @@
     }
     else
     {
+        @if (MostrarConfirmacio)
+        {
+            <div class="modal" tabindex="-1" role="dialog" style="display: block; background-color: rgba(0, 0, 0, 0.5);">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">¿Estas seguro?</h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-outline-success"
+                                @onclick="ConfirmarPerdido" >
+                                <span class="oi oi-check"></span> Sí
+                            </button>
+                            <button class="btn btn-outline-danger"
+                                @onclick="CancelarConfirmacion">
+                                <span class="oi oi-x"></span> No
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
         <table class="table">
             <thead>
                 <tr>
@@ -105,8 +138,12 @@
                         <td>
                             <AuthorizeView Roles="Administrator">
                                 <Authorized>
-                                    <button @onclick="()=>Seleccionar(item.Id)"
+                                    <button @onclick="()=>MostrarConfirmacion(item)"
                                         class="btn btn-outline-primary">
+                                        Encontrado
+                                    </button>
+                                    <button @onclick="()=>Seleccionar(item.Id)"
+                                        class="btn btn-outline-warning">
                                         <span class="oi oi-pencil"></span>
                                         Editar
                                     </button>
@@ -135,11 +172,52 @@
     "Agregar bovino" : "Modificar bovino";
     
     public bool ShowForm { get; set; } = false;
+    public bool MostrarConfirmacio { get; set; } = false;
     public string Filtro { get; set; } = "";
     public List<LostAnimalResponse> Animales { get; set; } = new List<LostAnimalResponse>();
+    public List<RazaResponse> Razas { get; set; } = new List<RazaResponse>();
     public LostAnimalResponse SelectCar { get; set; } = new LostAnimalResponse();
     public LostAnimalRequest request { get; set; } = new LostAnimalRequest();
+    public LostAnimalResponse AnimalEnConfirmacion { get; set; } = new LostAnimalResponse();
     
+    void MostrarConfirmacion(LostAnimalResponse animal)
+    {
+        MostrarConfirmacio = true;
+        AnimalEnConfirmacion = animal;
+    }
+    void CancelarConfirmacion()
+    {
+        MostrarConfirmacio = false;
+    }
+    async Task ConfirmarPerdido()
+    {
+        // Crear un objeto LostAnimalRequest a partir de AnimalRequest
+        var animalRequest = new AnimalRequest
+        {
+            Id = AnimalEnConfirmacion.Id,
+            Arete = AnimalEnConfirmacion.Arete,
+            Raza = AnimalEnConfirmacion.Raza,
+            Sexo = AnimalEnConfirmacion.Sexo,
+            CostoCompra = AnimalEnConfirmacion.CostoCompra,
+            FechaNacimiento = AnimalEnConfirmacion.FechaNacimiento
+        };
+
+        // Realiza una llamada al servidor para marcar el animal como perdido en la entidad LostAnimal.
+        var resultado = await animalServices.Registrar(animalRequest);
+        
+        if (resultado.Exitoso)
+        {
+            // Luego, elimina el animal de la entidad Animal.
+            var eliminacionExitosa = await lostAnimalServices.Eliminar(AnimalEnConfirmacion.ToRequest());
+            
+            if (eliminacionExitosa.Exitoso)
+            {
+                MostrarConfirmacio = false;
+                await CargarInfo(); // Actualiza la lista de animales después de los cambios en el servidor.
+            }
+        }
+    }
+ 
     void Cancelar()
     {
         request = new LostAnimalRequest();
@@ -151,9 +229,19 @@
         if (resultado.Exitoso)
             Animales = resultado.Datos!;
     }
+    async Task CargarRaza()
+    { 
+        //Llenar la lista de contactos para mostrar al usuario...
+        var r = await razaServices.Consultar("");
+        if (r.Exitoso)
+        {
+            Razas = r.Datos!;
+        }
+    }
     protected async override Task OnInitializedAsync()
     {
         await Consultar();
+        await CargarRaza();
     }
     public async Task<bool> Consultar()
     {

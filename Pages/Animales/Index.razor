@@ -52,7 +52,15 @@
                     </div>
                     <div class="mb-3 input-group">
                         <label for="Raza" class="input-group-text">Raza</label>
-                        <InputText id="Raza" class="form-control" @bind-Value="@request.Raza" />
+                        <select id="Sexo" class="form-control" @bind="@request.Raza">
+                            <option disabled="Selecciona un sexo">Selecciona una raza</option>
+                            @foreach(var raza in Razas)
+                            {
+                                <option value="@raza.Nombre">
+                                    @raza.Nombre 
+                                </option>
+                            }
+                        </select>
                     </div>
                     <div class="mb-3 input-group">
                         <label for="Sexo" class="input-group-text">Sexo</label>
@@ -137,7 +145,7 @@
                                             Perdido
                                         </button>
                                         <button @onclick="()=>Seleccionar(item.Id)"
-                                            class="btn btn-outline-primary">
+                                            class="btn btn-outline-warning">
                                             <span class="oi oi-pencil"></span>
                                             Editar
                                         </button>
@@ -168,6 +176,7 @@
     public bool ShowForm { get; set; } = false;
     public bool MostrarConfirmacio { get; set; } = false;
     public string Filtro { get; set; } = "";
+    public List<RazaResponse> Razas { get; set; } = new List<RazaResponse>();
     public List<AnimalResponse> Animales { get; set; } = new List<AnimalResponse>();
     public AnimalResponse SelectCar { get; set; } = new AnimalResponse();
     public AnimalResponse AnimalEnConfirmacion { get; set; } = new AnimalResponse();
@@ -195,9 +204,19 @@
         if (resultado.Exitoso)
             Animales = resultado.Datos!;
     }
+    async Task CargarRaza()
+    { 
+        //Llenar la lista de contactos para mostrar al usuario...
+        var r = await razaServices.Consultar("");
+        if (r.Exitoso)
+        {
+            Razas = r.Datos!;
+        }
+    }
     protected async override Task OnInitializedAsync()
     {
         await Consultar();
+        await CargarRaza();
     }
     public async Task<bool> Consultar()
     {
@@ -257,34 +276,34 @@
         }
     }
     async Task ConfirmarPerdido()
-{
-    // Crear un objeto LostAnimalRequest a partir de AnimalRequest
-    var lostAnimalRequest = new LostAnimalRequest
     {
-        Id = AnimalEnConfirmacion.Id,
-        Arete = AnimalEnConfirmacion.Arete,
-        Raza = AnimalEnConfirmacion.Raza,
-        Sexo = AnimalEnConfirmacion.Sexo,
-        CostoCompra = AnimalEnConfirmacion.CostoCompra,
-        FechaNacimiento = AnimalEnConfirmacion.FechaNacimiento,
-        FechaMuerte = DateTime.Now // Ajusta la fecha de muerte según sea necesario
-    };
-
-    // Realiza una llamada al servidor para marcar el animal como perdido en la entidad LostAnimal.
-    var resultado = await lostAnimalServices.Crear(lostAnimalRequest);
-    
-    if (resultado.Exitoso)
-    {
-        // Luego, elimina el animal de la entidad Animal.
-        var eliminacionExitosa = await animalServices.Eliminar(AnimalEnConfirmacion.ToRequest());
-        
-        if (eliminacionExitosa.Exitoso)
+        // Crear un objeto LostAnimalRequest a partir de AnimalRequest
+        var lostAnimalRequest = new LostAnimalRequest
         {
-            MostrarConfirmacio = false;
-            await CargarInfo(); // Actualiza la lista de animales después de los cambios en el servidor.
+            Id = AnimalEnConfirmacion.Id,
+            Arete = AnimalEnConfirmacion.Arete,
+            Raza = AnimalEnConfirmacion.Raza,
+            Sexo = AnimalEnConfirmacion.Sexo,
+            CostoCompra = AnimalEnConfirmacion.CostoCompra,
+            FechaNacimiento = AnimalEnConfirmacion.FechaNacimiento,
+            FechaMuerte = DateTime.Now // Ajusta la fecha de muerte según sea necesario
+        };
+
+        // Realiza una llamada al servidor para marcar el animal como perdido en la entidad LostAnimal.
+        var resultado = await lostAnimalServices.Crear(lostAnimalRequest);
+        
+        if (resultado.Exitoso)
+        {
+            // Luego, elimina el animal de la entidad Animal.
+            var eliminacionExitosa = await animalServices.Eliminar(AnimalEnConfirmacion.ToRequest());
+            
+            if (eliminacionExitosa.Exitoso)
+            {
+                MostrarConfirmacio = false;
+                await CargarInfo(); // Actualiza la lista de animales después de los cambios en el servidor.
+            }
         }
     }
-}
     void Formulario()
     {
         urlHelper.NavigateTo("add/bovino");
