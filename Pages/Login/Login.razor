@@ -38,12 +38,10 @@
             </form>
         </div>
     </div>
-    <br>
-    <br>
-    <br>
+    
     @if (!string.IsNullOrEmpty(mensajeError))
     {
-        <div class="alert alert-danger mt-3" role="alert">
+        <div class="alert alert-danger mt-3 " role="alert">
             @mensajeError
         </div>
     }
@@ -71,7 +69,7 @@
             var userAccount = userAccountService.GetByUserName(model.UserName);
             if(userAccount == null || userAccount.Clave != model.Password)
             {
-                mensajeError = "Calanco, Las Credenciales Son Incorrectas 😒❌";
+                mensajeError = "Las Credenciales Son Incorrectas 😒❌";
                 return;
             }
 

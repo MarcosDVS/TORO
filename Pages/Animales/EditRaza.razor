@@ -98,18 +98,7 @@
     {
         if (request.Id == 0)
         {
-            if (request.Id == 0)
-            {
-                var r = await razaServices.Crear(request);
-                StateHasChanged();
-                request = new RazaRequest();
-                await CargarRaza();
-                urlHelper.NavigateTo("add/bovino");
-            }
-            else
-            {
-                ErrorMessage = "No se pudo agregar la raza";
-            }
+            ErrorMessage = "Selecciona una raza para editarla";
         }
         else
         {
@@ -146,6 +135,6 @@
         request = new RazaRequest();
         urlHelper.NavigateTo("/add/bovino");
     }
-    }
+    
     
 }

@@ -12,6 +12,7 @@ public class AnimalResponse
     public decimal CostoCompra { get; set; }
     public DateTime FechaNacimiento { get; set; }
     public bool Vendido { get; set; } = false;
+    
 
     public AnimalRequest ToRequest()
     {
