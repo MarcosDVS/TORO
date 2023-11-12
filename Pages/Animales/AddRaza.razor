@@ -1,0 +1,151 @@
+@page "/Raza"
+
+<h3>Razas</h3>
+
+<div class="container-sm d-flex justify-content-evenly align-items-lg-start">
+    <!--Tabla de Razas-->
+    <div class="m-4 d-flex row responsive" style="width:25rem">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">...</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var i in Razas)
+                {
+                    <tr >
+                        <td>@i.Id</td>
+                        <td>@i.Nombre</td>
+                        <td>
+                            <AuthorizeView Roles="Administrator">
+                                <Authorized>
+                                    <button @onclick="()=>Select(i.Id)" class=" btn btn-warning ">
+                                        <span class="oi oi-pencil"></span>
+                                        </button>
+                                    <button @onclick="()=>Eliminar(i)" class=" btn btn-danger">
+                                        <span class="oi oi-trash"></span>
+                                    </button>
+                                    <div class="row"></div>
+                                </Authorized>
+                                <NotAuthorized>
+                                    <button class="btn btn-danger">
+                                        Sin Acceso.
+                                    </button>
+                                </NotAuthorized>
+                            </AuthorizeView>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="m-4 d-flex">
+
+        <div class="container-sm p-4" style="width:25rem; border-color:lightgray; border-style:solid; border-radius:5%">
+            <h3 class="text-lg-center mb-4">Agregar Raza</h3>
+
+            <EditForm Model="request" OnValidSubmit="Enviar">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @ErrorMessage
+                    </div>
+                }
+                <div class="input-group">
+                    <div class="mb-3 input-group">
+                        <label class="input-group-text">Nombre/Raza</label>
+                        <InputText class="form-control" @bind-Value="@request.Nombre"></InputText>
+                    </div>
+                    
+                    <div class="d-grid gap-2 w-100">
+                        <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                        <button @onclick="Back" class="btn btn-outline-secondary">Cancelar</button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    public RazaRequest request { get; set; } = new RazaRequest();
+    public List<RazaResponse> Razas { get; set; } = new();
+    public string Filtro { get; set; } = "";
+    public string ErrorMessage { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarRaza();
+    }
+
+    async Task CargarRaza()
+    {
+        var resultado =
+        await razaServices.Consultar(Filtro);
+        if (resultado.Exitoso)
+        {
+            Razas = resultado.Datos ?? new List<RazaResponse>();
+        }
+    }
+    public async Task Enviar()
+    {
+        if (request.Id == 0)
+        {
+            if (request.Id == 0)
+            {
+                var r = await razaServices.Crear(request);
+                StateHasChanged();
+                request = new RazaRequest();
+                await CargarRaza();
+                urlHelper.NavigateTo("add/bovino");
+            }
+            else
+            {
+                ErrorMessage = "No se pudo agregar la raza";
+            }
+        }
+        else
+        {
+            //Debo solicitar modificar el contacto...
+            var r = await razaServices.Modificar(request);
+            if (r.Exitoso)
+            {
+                await CargarRaza();
+                StateHasChanged();
+                Back();
+            }
+        }
+    }
+    public async Task Eliminar(RazaResponse item)
+    {
+        var resultado = await razaServices.Eliminar(item.ToRequest());
+        if (resultado.Exitoso)
+        {
+            await CargarRaza();
+            StateHasChanged();
+        }
+    }
+
+    public void Select(int Id)
+    {
+        request = Razas
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new RazaRequest();
+    }
+
+    void Back()
+    {
+        request = new RazaRequest();
+        urlHelper.NavigateTo("/add/bovino");
+    }
+    }
+    
+}

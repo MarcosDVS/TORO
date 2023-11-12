@@ -1,6 +1,8 @@
 ﻿@page "/factura"
 @using TORO.Data.Response;
 @attribute [Authorize(Roles = "Administrator,User")]
+@inject IJSRuntime JSRuntime;
+
 <style>
     .table th{
     border: 1px solid #000000;
@@ -11,6 +13,13 @@
         background-color: rgb(0, 0, 0);
     }
 </style>
+
+<script>
+    function printPage() {
+    window.print();
+}
+</script>
+
 <hr>
 @if(!ShowDetails)
 {
@@ -37,13 +46,18 @@
 else
 {
     <div class="row">
-        <div class="col">
+        <div class="col-8">
             <h3 class="card-title"><b>@TituloForm</b></h3>
         </div>
-        <div class="col">
+        <div class="col-1">
             <button class="btn btn-outline-danger d-print-none"
                 @onclick="Back">
                 <span class="oi oi-arrow-left"></span>
+            </button>
+        </div>
+        <div class="col">
+            <button class="btn btn-outline-info d-print-none" @onclick="PrintPageAsync">
+                <span class="oi oi-print"></span>
             </button>
         </div>
     </div>
@@ -56,46 +70,53 @@ else
 <div class="container">
     @if(ShowDetails)
     {
-        <!-- Mostrar detalles de la factura seleccionada -->
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Cantidad</th>
-                    <th scope="col">Descripción</th>
-                    <th scope="col">ITBIS</th>
-                    <th scope="col">Precio</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var detalle in FacturaDetalles)
-                {
-                    <tr>
-                        <td>@detalle.Cantidad</td>
-                        <td>@detalle.Animal.Arete @detalle.Animal.Raza @detalle.Animal.Sexo</td>
-                        <td>
-                            <span style="white-space: nowrap;">
-                                @($"{(detalle.Precio * 0.18m):C2}")
-                            </span>
-                        </td>
-                        <td>@detalle.Precio.ToString("C2")</td>
+        <p><b>Fecha:</b> @SelectedFactura.Fecha.ToShortDateString()</p>
+<h5><b>Cliente:</b> @SelectedFactura.Cliente</h5>
 
-                    </tr>
-                }
-                <div class="row">
-                    <div class="col">
-                    <h5><b>ITBIS:</b> @FacturaDetalles.Sum(c=>c.Precio*0.18m).ToString("C2")</h5>
-                    </div>
-                    <div class="col">
-                        <h4><b>Total:</b> @FacturaDetalles.Sum(c=>c.Precio).ToString("C2")</h4>
-                    </div>
-                </div>
-            </tbody>
-        </table>
+<!-- Mostrar detalles de la factura seleccionada -->
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Cantidad</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">ITBIS</th>
+                <th scope="col">Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detalle in FacturaDetalles)
+            {
+                <tr>
+                    <td>@detalle.Cantidad</td>
+                    <td>@detalle.Animal.Arete @detalle.Animal.Raza @detalle.Animal.Sexo</td>
+                    <td>
+                        <span style="white-space: nowrap;">
+                            @($"{(detalle.Precio * 0.18m):C2}")
+                        </span>
+                    </td>
+                    <td>@detalle.Precio.ToString("C2")</td>
+                </tr>
+            }
+            <tr>
+                <td colspan="2"></td>
+                <td><b>ITBIS:</b></td>
+                <td>@FacturaDetalles.Sum(c => c.Precio * 0.18m).ToString("C2")</td>
+            </tr>
+            <tr>
+                <td colspan="2"></td>
+                <td><b>Total:</b></td>
+                <td>@FacturaDetalles.Sum(c => c.Precio).ToString("C2")</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
     }
     else if(Facturas != null)
     {
         <!-- Mostrar la lista de facturas -->
-        <table class="table">
+        <table class="table ">
             <thead>
                 <tr>
                     <th scope="col">#</th>
@@ -201,6 +222,11 @@ else
         SelectedFactura = factura;
         FacturaDetalles = factura.Detalles.ToList();
         ShowDetails = true;
+    }
+    private async Task PrintPageAsync()
+    {
+        // Llama a la función JavaScript para imprimir la página
+        await JSRuntime.InvokeVoidAsync("printPage");
     }
     
 }

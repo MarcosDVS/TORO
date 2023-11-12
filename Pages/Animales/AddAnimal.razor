@@ -18,7 +18,18 @@
                 </div>
                 <div class="mb-3 input-group">
                     <label for="Raza" class="input-group-text">Raza</label>
-                    <InputText id="Raza" class="form-control" @bind-Value="@request.Raza" />
+                    <select id="Sexo" class="form-control" @bind="@request.Raza">
+                        <option disabled="Selecciona un sexo">Selecciona una raza</option>
+                        @foreach(var raza in Razas)
+                        {
+                            <option value="@raza.Nombre">
+                                @raza.Nombre 
+                            </option>
+                        }
+                    </select>
+                    <button class="btn btn-success" @onclick='()=>{urlHelper.NavigateTo("/Raza", true);}'>
+                        <span class="oi oi-plus"></span>
+                    </button>
                 </div>
                 <div class="mb-3 input-group">
                     <label for="Sexo" class="input-group-text">Sexo</label>
@@ -55,6 +66,7 @@
 {
     public AnimalRequest request { get; set; } = new AnimalRequest();
     public List<AnimalResponse> Animales { get; set; } = new List<AnimalResponse>();
+    public List<RazaResponse> Razas { get; set; } = new List<RazaResponse>();
     public string Filtro { get; set; } = "";
     public string ErrorMessage { get; set; } = "";
     void Cancelar()
@@ -69,6 +81,15 @@
         if (resultado.Exitoso)
             Animales = resultado.Datos!;
     }
+    async Task CargarRaza()
+    { 
+        //Llenar la lista de contactos para mostrar al usuario...
+        var r = await razaServices.Consultar("");
+        if (r.Exitoso)
+        {
+            Razas = r.Datos!;
+        }
+    }
     public async Task<bool> Consultar()
     {
         var response = await animalServices.Consultar(Filtro);
@@ -79,6 +100,7 @@
     protected async override Task OnInitializedAsync()
     {
         await Consultar();
+        await CargarRaza();
     }
     public async Task Send()
     {
