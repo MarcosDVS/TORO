@@ -8,7 +8,7 @@
 <h3><b>Registro de Factura</b></h3>
 @if (!string.IsNullOrWhiteSpace(Message))
 {
-    <div class="alert alert-danger" role="alert">@Message</div>
+    <div class="alert alert-danger d-print-none" role="alert">@Message</div>
 }
 <EditForm Model="facturaRequest" OnValidSubmit="Send">
     <DataAnnotationsValidator />
@@ -17,13 +17,13 @@
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
-                <label for="FechaVenta">Fecha de Venta:</label>
+                <label for="FechaVenta"><b>Fecha de Venta:</b></label>
                 <InputDate @bind-Value="facturaRequest.Fecha" id="Fecha" class="form-control" />
             </div>    
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="Cantidad">Nombre/Cliente:</label>
+                <label for="Cantidad"><b>Nombre/Cliente:</b></label>
                 <InputText @bind-Value="facturaRequest.Cliente" id="Cantidad" class="form-control" />
             </div>
         </div>
@@ -31,7 +31,7 @@
 
     <div class="row">
         <div class="col-md-6">
-            <div class="form-group">
+            <div class="form-group d-print-none">
                 <label for="AnimalId">ID del Animal:</label>
                 <select class="form-control" @bind="IdAnimal">
                     <option disabled>Selecciona un animal</option>
@@ -49,7 +49,7 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="form-group">
+            <div class="form-group d-print-none">
                 <label for="Cantidad">Cantidad:</label>
                 <InputNumber @bind-Value="detalleFacturaRequest.Cantidad" id="Cantidad" class="form-control" />
             </div>
@@ -58,7 +58,7 @@
 
     <div class="row">
         <div class="col-md-6">
-            <div class="form-group">
+            <div class="form-group d-print-none">
                 <label for="PrecioVenta">Precio de Venta:</label>
                 <InputNumber @bind-Value="detalleFacturaRequest.Precio" id="PrecioVenta" class="form-control" />
             </div>
@@ -73,7 +73,7 @@
 
     
     @*Disenar los elementos que se cargan a la factura*@
-    <h5>Detalle de la factura</h5>
+    <h5><b>Detalle de la factura</b></h5>
     <table class="table">
         <thead>
             <tr>
@@ -98,7 +98,7 @@
                 <tr>
                     <td class="col w-25 text-center">
                         <InputNumber 
-                            class="form-control" 
+                            class="form-control " 
                             @bind-Value="@detalle.Cantidad" />
                     </td>
                     <td class="col w-50">
@@ -114,14 +114,9 @@
                         @detalle.Precio.ToString("C2")
                     </td>
                     <td>
-                        <button 
-                            type="button"
-                            class="btn btn-outline-danger"
+                        <button type="button" class="btn btn-outline-danger d-print-none"
                         @onclick="()=>EliminarDetalle(detalle.AnimalId)">
-                    <span 
-                        class="oi oi-trash">
-
-                    </span>
+                        <span class="oi oi-trash"></span>
                     </button>
                     </td>
                 </tr>
@@ -131,11 +126,14 @@
     <div class="card mb-3 p-3">
         <h5 class="card-header">Resumen</h5>
         <div class="card-body">
+            <label for="">ITBIS</label>
+            @($"{(facturaRequest.SubTotal * 0.18m):C2}")
+            <br>
             <label>Total:</label>
             @facturaRequest.SubTotal.ToString("C2")
             <div class="mb-3">
                 <button 
-                    class="btn btn-success" 
+                    class="btn btn-success d-print-none" 
                     type="submit">
                     Guardar
                 </button>
