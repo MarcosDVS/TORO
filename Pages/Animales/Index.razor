@@ -100,7 +100,7 @@
                     <div class="mb-3 input-group">
                         <label for="Raza" class="input-group-text">Raza</label>
                         <select id="Sexo" class="form-control" @bind="@request.Raza">
-                            <option disabled="Selecciona un sexo">Selecciona una raza</option>
+                            <option value="" disabled>Selecciona una raza</option>
                             @foreach(var raza in Razas)
                             {
                                 <option value="@raza.Nombre">
@@ -119,7 +119,7 @@
                     <div class="mb-3 input-group">
                         <label for="Sexo" class="input-group-text">Sexo</label>
                         <select id="Sexo" class="form-control" @bind="@request.Sexo">
-                            <option disabled="Selecciona un sexo">Selecciona un sexo</option>
+                            <option value="" disabled>Selecciona un sexo</option>
                             <option value="Macho">Macho</option>
                             <option value="Hembra">Hembra</option>
                         </select>
