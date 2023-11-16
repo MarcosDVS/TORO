@@ -4,13 +4,9 @@
 @inject IJSRuntime JSRuntime;
 
 <style>
-    .table th{
-    border: 1px solid #000000;
-    
-    }
-
     .table thead {
-        background-color: rgb(0, 0, 0);
+        background-color: darkgray;
+        color: black;
     }
 </style>
 
@@ -20,11 +16,10 @@
 }
 </script>
 
-<hr>
 @if(!ShowDetails)
 {
     <form @onsubmit="BuscarFacturas">
-        <div class="row mb-3">
+        <div class="row mb-3 d-print-none">
             <div class="col-md-3">
                 <input type="text" class="form-control" @bind="clienteFiltro" placeholder="Nombre del Cliente">
             </div>
@@ -38,6 +33,11 @@
                 <button class="btn btn-outline-success" 
                     @onclick='CrearFactura'>
                     <span class="oi oi-plus"></span>
+                </button>
+            </div>
+            <div class="col-md-1">
+                 <button class="btn btn-outline-info d-print-none" @onclick="PrintPageAsync">
+                    <span class="oi oi-print"></span>
                 </button>
             </div>
         </div>
@@ -70,8 +70,8 @@ else
 <div class="container">
     @if(ShowDetails)
     {
-        <p><b>Fecha:</b> @SelectedFactura.Fecha.ToShortDateString()</p>
-<h5><b>Cliente:</b> @SelectedFactura.Cliente</h5>
+        <h5><b>Fecha:</b> @SelectedFactura.Fecha.ToShortDateString()</h5>
+        <h5><b>Cliente:</b> @SelectedFactura.Cliente</h5>
 
 <!-- Mostrar detalles de la factura seleccionada -->
 <div class="table-responsive">
@@ -131,7 +131,7 @@ else
                 @foreach (var factura in Facturas)
                 {
                     <tr>
-                        <th scope="row">@factura.Id</th>
+                        <td scope="row">@factura.Id</td>
                         <td>@factura.Cliente</td>
                         <td>
                             <span style="white-space: nowrap;">
@@ -143,11 +143,11 @@ else
                         <td>
                             <AuthorizeView Roles="Administrator">
                                 <Authorized>
-                                    <button class="btn btn-outline-primary" @onclick="() => MostrarDetalles(factura)">
+                                    <button class="btn btn-outline-primary d-print-none" @onclick="() => MostrarDetalles(factura)">
                                         <span class="oi oi-info"></span>
                                         Detalles
                                     </button>
-                                    <button @onclick="() => Eliminar(factura)" class="btn btn-outline-danger">
+                                    <button @onclick="() => Eliminar(factura)" class="btn btn-outline-danger d-print-none">
                                         <span class="oi oi-trash"></span>
                                         Borrar
                                     </button>

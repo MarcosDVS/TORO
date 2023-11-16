@@ -1,16 +1,11 @@
 ﻿@page "/animal/perdido"
 @attribute [Authorize(Roles = "Administrator,User")]
 <style>
-    .table th{
-    border: 1px solid #000000;
-    
-    }
-
     .table thead {
-        background-color: rgb(0, 0, 0);
+        background-color: darkgray;
+        color: black;
     }
 </style>
-<hr>
 @if (!ShowForm)
 {
     <div class="row mb-2">
@@ -140,6 +135,7 @@
                                 <Authorized>
                                     <button @onclick="()=>MostrarConfirmacion(item)"
                                         class="btn btn-outline-primary">
+                                        <span class="oi oi"></span>
                                         Encontrado
                                     </button>
                                     <button @onclick="()=>Seleccionar(item.Id)"
