@@ -2,15 +2,15 @@
 @attribute [Authorize(Roles = "Administrator,User")]
 <style>
     .table thead {
-        background-color: darkgray;
-        color: black;
+        background-color: #0E2262;
+        color: rgb(223, 223, 223);
     }
 </style>
 @if (!ShowForm)
 {
     <div class="row mb-2">
         <div class="col">
-            <input type="text" @bind="Filtro">
+            <input type="text" placeholder="Nombre ó Email" @bind="Filtro">
         </div>
         <div class="col">
             <button class="btn btn-outline-primary" @onclick="()=>CargarUsuarios()">

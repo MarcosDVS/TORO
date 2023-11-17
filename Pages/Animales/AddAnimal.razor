@@ -54,16 +54,20 @@
                     </div>
                     <div class="mb-3 input-group">
                         <label for="Raza" class="input-group-text">Raza</label>
-                        <select id="Sexo" class="form-control" @bind="@request.Raza">
-                            <option value="" disabled>Selecciona una raza</option>
-                            @foreach(var raza in Razas)
+                        <input 
+                            class="form-control"
+                            placeholder="Raza"
+                            aria-label="Raza"
+                            aria-describedby="button-addon2" list="contactos"
+                            @bind="@request.Raza"
+                        />
+                        <datalist id="contactos">
+                            @foreach (var cliente in Razas)
                             {
-                                <option value="@raza.Nombre">
-                                    @raza.Nombre
-                                </option>
-                                
+                                <option value="@cliente.Nombre"  />
                             }
-                        </select>
+                        </datalist>
+                        
                         <button class="btn btn-outline-primary d-print-none" type="button" @onclick='()=>{urlHelper.NavigateTo("/Raza", true);}'>
                             <span class="oi oi-info"></span>
                         </button>
@@ -183,6 +187,8 @@
     {
         reques = new RazaRequest();
         Form = false;
+        
+        CargarRaza();
     }
     public async Task Enviar()
     {

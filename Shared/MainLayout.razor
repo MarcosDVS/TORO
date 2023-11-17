@@ -11,25 +11,25 @@
     </div>
 
     <main>
-        <div class="top-row px-4 d-print-none" style="background-color: darkgray;">
+        <div class="top-row px-4 d-print-none" style="background-color: #0E2262;">
             <AuthorizeView>
                 <Authorized>
-                    <a class="nav-link active" style="color: black;">
+                    <a class="nav-link active" style="color: white;">
                         @context.User.FindFirstValue(ClaimTypes.GivenName)
                     </a>
                 </Authorized>
             </AuthorizeView>
-            <a href="about" style="color: black;">About</a>
+            <a href="about" style="color: white;">About</a>
             
             <AuthorizeView>
             <Authorized>
-                <a class="nav-link active" href="javascript:void(0)" style="color: black;" @onclick="Logout">
+                <a class="nav-link active" href="javascript:void(0)" style="color: white;" @onclick="Logout">
                     <img src="cerrar-sesion.png" style="height: 20px; width: 20px; ">
                     <span aria-hidden="true"></span> LogOut
                 </a>
             </Authorized>
             <NotAuthorized>
-                <a class="nav-link active" href="login" style="color: black;">
+                <a class="nav-link active" href="login" style="color: white;">
                     LogIn
                 </a>
             </NotAuthorized>
