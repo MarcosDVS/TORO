@@ -27,7 +27,10 @@
                 <input type="date" class="form-control" @bind="fechaFiltro">
             </div>
             <div class="col">
-                <button type="submit" class="btn btn-outline-primary">Buscar</button>
+                <button type="submit" class="btn btn-outline-primary">
+                    <span class="oi oi-magnifying-glass"></span>
+                    Buscar
+                </button>
                 <button class="btn btn-outline-primary d-print-none" @onclick="PrintPageAsync">
                     <span class="oi oi-print"></span>
                 </button>
@@ -113,7 +116,7 @@ else
     else if(Facturas != null)
     {
         <!-- Mostrar la lista de facturas -->
-        <table class="table ">
+        <table class="table">
             <thead>
                 <tr>
                     <th scope="col">#</th>
