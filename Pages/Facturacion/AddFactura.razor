@@ -3,7 +3,13 @@
 @using TORO.Data.Response;
 @attribute [Authorize(Roles = "Administrator,User")]
 
-<hr>
+<style>
+    .table thead {
+        background-color: #0E2262;
+        color: rgb(223, 223, 223);
+    }
+</style>
+
 <!-- Agregar el diseño de la página aquí -->
 <h3><b>Registro de Factura</b></h3>
 @if (!string.IsNullOrWhiteSpace(Message))
@@ -14,25 +20,25 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="FechaVenta"><b>Fecha de Venta:</b></label>
+    <div class="row mb-2">
+        <div class="col-md-6 mb-2">
+            <div class="input-group">
+                <label for="FechaVenta" class="input-group-text"><b>Fecha:</b></label>
                 <InputDate @bind-Value="facturaRequest.Fecha" id="Fecha" class="form-control" />
             </div>    
         </div>
         <div class="col-md-6">
-            <div class="form-group">
-                <label for="Cantidad"><b>Nombre/Cliente:</b></label>
+            <div class="input-group">
+                <label for="Cantidad" class="input-group-text"><b>Cliente:</b></label>
                 <InputText @bind-Value="facturaRequest.Cliente" id="Cantidad" class="form-control" />
             </div>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-2">
         <div class="col-md-6">
-            <div class="form-group d-print-none">
-                <label for="AnimalId">ID del Animal:</label>
+            <div class="input-group d-print-none">
+                <label for="AnimalId" class="input-group-text">Animal:</label>
                 <select class="form-control" @bind="IdAnimal">
                     <option disabled>Selecciona un animal</option>
                     @foreach (var animal in Animales)
@@ -49,8 +55,8 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="form-group d-print-none">
-                <label for="Cantidad">Cantidad:</label>
+            <div class="input-group d-print-none">
+                <label for="Cantidad" class="input-group-text">Cantidad:</label>
                 <InputNumber @bind-Value="detalleFacturaRequest.Cantidad" id="Cantidad" class="form-control" />
             </div>
         </div>
@@ -58,17 +64,17 @@
 
     <div class="row">
         <div class="col-md-6">
-            <div class="form-group d-print-none">
-                <label for="PrecioVenta">Precio de Venta:</label>
+            <div class="input-group d-print-none">
+                <label for="PrecioVenta" class="input-group-text">Precio de Venta:</label>
                 <InputNumber @bind-Value="detalleFacturaRequest.Precio" id="PrecioVenta" class="form-control" />
             </div>
         </div>
         <div class="col-md-2">
-        <button class="btn btn-success d-print-none" type="button"
-            @onclick="AgregarAlDetalle">
-            <span class="oi oi-collapse-down"></span>
-        </button>
-    </div>
+            <button class="btn btn-success d-print-none" type="button"
+                @onclick="AgregarAlDetalle">
+                <span class="oi oi-collapse-down"></span>
+            </button>
+        </div>
     </div>
 
     
@@ -126,30 +132,92 @@
     <div class="card mb-3 p-3">
         <h5 class="card-header"><b>Resumen</b></h5>
         <div class="card-body">
-            <label for=""><b>ITBIS:</b></label>
-            @($"{(facturaRequest.SubTotal * 0.18m):C2}")
-            <br>
-            <label><b>Total:</b></label>
-            @facturaRequest.SubTotal.ToString("C2")
-            <div class="mb-3">
-                <button 
-                    class="btn btn-success d-print-none" 
-                    type="submit">
-                    Guardar
-                </button>
-            </div>
+            
+            @if (Cobro)
+            {
+                <label for=""><b>ITBIS:</b></label>
+                @($"{(facturaRequest.SubTotal * 0.18m):C2}")
+                <br>
+                <label><b>Total:</b></label>
+                @facturaRequest.SubTotal.ToString("C2")
+                <div class="mb-3">
+                    <button 
+                        class="btn btn-success d-print-none" 
+                        type="button"
+                        @onclick="Cobrar">
+                        Cobrar
+                    </button>
+                </div>
+            }
+            @if (Pagado)
+            {
+                <label for=""><b>ITBIS:</b></label>
+                @($"{(facturaRequest.SubTotal * 0.18m):C2}")
+                <br>
+                <label><b>Total:</b></label>
+                @facturaRequest.SubTotal.ToString("C2")
+                <div class="card mb-3 p-3">
+                    <h5 class="card-header"><b>Registro de Pago</b></h5>
+                    <div class="card-body">
+                        <label for="montoPagado"><b>Monto Pagado:</b></label>
+                        <InputNumber @bind-Value="MontoPagado" id="montoPagado" class="form-control" />
+                        <div class="mb-3">
+                            <button 
+                                class="btn btn-danger d-print-none" 
+                                type="button"
+                                @onclick="CancelarPago">
+                                Cancelar
+                            </button>
+                            <button 
+                                class="btn btn-success d-print-none" 
+                                type="button"
+                                @onclick="CalcularCambio">
+                                Calcular
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Chance )
+            {
+                <label for=""><b>ITBIS:</b></label>
+                @($"{(facturaRequest.SubTotal * 0.18m):C2}")
+                <br>
+                <label><b>Total:</b></label>
+                @facturaRequest.SubTotal.ToString("C2")
+                <div class="card mb-3 p-3">
+                    <h5 class="card-header"><b>Cambio</b></h5>
+                    <div class="card-body">
+                        <label><b>Cambio:</b></label>
+                        @Cambio.ToString("C2")
+                        <div class="mb-3">
+                            <button 
+                                class="btn btn-danger d-print-none" 
+                                type="button"
+                                @onclick="CancelarPago">
+                                Cancelar
+                            </button>
+                            <button 
+                                class="btn btn-success d-print-none" 
+                                type="submit" @ondblclick="()=>{Cobro=true;}">
+                                Guardar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </EditForm>
 
-<style>
-    .table thead {
-        background-color: #0E2262;
-        color: rgb(223, 223, 223);
-    }
-</style>
+
 
 @code {
+    public bool Cobro { get; set; } = true;
+    public bool Pagado { get; set; } = false;
+    public bool Chance { get; set; } = false;
+    public decimal MontoPagado = 0;
+    public decimal Cambio = 0;
     public string? Message { get; set; } = null;
     public string Nombre { get; set; } = string.Empty;
     public List<AnimalResponse> Animales { get; set; } = new List<AnimalResponse>();
@@ -235,8 +303,15 @@
 
             if (actualizacionExitosa)
             {
-                urlHelper.NavigateTo("/factura");
                 Message = result.Mensaje;
+                // Reset the form after successful save
+                facturaRequest = new FacturaRequest();
+                detalleFacturaRequest = new FacturaDetalleRequest();
+                Pagado = false;
+                Chance = false;
+                Cobro = true;
+                MontoPagado = 0;
+                Cambio = 0;
             }
             else
             {
@@ -250,4 +325,32 @@
 
     }
     
+    void Cobrar()
+    {
+        Pagado = true;
+        Cobro = false;
+    }
+
+    void CancelarPago()
+    {
+        Pagado = false;
+        Chance = false;
+        Cobro = true;
+        MontoPagado = 0;
+        Cambio = 0;
+    }
+
+    void CalcularCambio()
+    {
+        Pagado = false;
+        Chance = true;
+        if (MontoPagado >= facturaRequest.SubTotal)
+        {
+            Cambio = MontoPagado - facturaRequest.SubTotal;
+        }
+        else
+        {
+            Message = "El monto pagado debe ser igual o mayor al total de la factura.";
+        }
+    }
 }

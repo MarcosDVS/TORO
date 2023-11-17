@@ -1,14 +1,23 @@
 @page "/gasto"
 @attribute [Authorize(Roles = "Administrator,User")]
+@inject IJSRuntime JSRuntime;
 <style>
     .table thead {
         background-color: #0E2262;
         color: rgb(223, 223, 223);
     }
 </style>
+<script>
+    function printPage() {
+        window.print();
+    }
+</script>
+
+<PageTitle>Gastos</PageTitle>
+
 @if (!ShowForm)
 {
-    <div class="row mb-2">
+    <div class="row mb-2 d-print-none">
         <div class="col">
             <input type="text" placeholder="Detalle ó Costo" @bind="Filtro">
         </div>
@@ -18,6 +27,9 @@
                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
                 </svg>
                 Buscar
+            </button>
+            <button class="btn btn-outline-primary d-print-none" @onclick="PrintPageAsync">
+                <span class="oi oi-print"></span>
             </button>
             <button class="btn btn-outline-success" @onclick="()=>{ShowForm = !ShowForm;}">
                 <span class="oi oi-plus"></span>
@@ -88,16 +100,18 @@
                         <td>
                             <AuthorizeView Roles="Administrator">
                                 <Authorized>
-                                    <button @onclick="()=>Seleccionar(item.Id)"
-                                        class="btn btn-outline-warning">
-                                        <span class="oi oi-pencil"></span>
-                                        Editar
-                                    </button>
-                                    <button @onclick="()=>Eliminar(item)"
-                                        class="btn btn-outline-danger">
-                                        <span class="oi oi-trash"></span>
-                                        Borrar
-                                    </button>
+                                    <div class="button d-print-none">
+                                        <button @onclick="()=>Seleccionar(item.Id)"
+                                            class="btn btn-outline-warning">
+                                            <span class="oi oi-pencil"></span>
+                                            Editar
+                                        </button>
+                                        <button @onclick="()=>Eliminar(item)"
+                                            class="btn btn-outline-danger">
+                                            <span class="oi oi-trash"></span>
+                                            Borrar
+                                        </button>
+                                    </div>
                                 </Authorized>
                                 <NotAuthorized>
                                     <button class="btn btn-outline-danger">
@@ -206,5 +220,9 @@
         .Select(c => c.ToRequest())
         .FirstOrDefault() ?? new GastoRequest();
     }
-    
+    private async Task PrintPageAsync()
+    {
+        // Llama a la función JavaScript para imprimir la página
+        await JSRuntime.InvokeVoidAsync("printPage");
+    }
 }
