@@ -3,7 +3,7 @@
 @inject IJSRuntime JSRuntime;
 <style>
     .table thead {
-        background-color: #0E2262;
+        background-color: black;
         color: rgb(223, 223, 223);
     }
 </style>
@@ -199,7 +199,7 @@
                                         <div class="button d-print-none">
                                             <button @onclick="()=>MostrarConfirmacion(item)"
                                                 class="btn btn-outline-primary">
-                                                <span class="oi oi-warning"></span>
+                                                <span class="oi oi-thumb-down"></span>
                                                 Perdido
                                             </button>
                                             <button @onclick="()=>Seleccionar(item.Id)"

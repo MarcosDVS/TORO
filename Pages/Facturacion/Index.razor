@@ -4,7 +4,7 @@
 @inject IJSRuntime JSRuntime;
 <style>
     .table thead {
-        background-color: #0E2262;
+        background-color: black;
         color: rgb(223, 223, 223);
     }
 </style>
@@ -191,14 +191,14 @@ else
     }
     void Back()
     {
-        ShowDetails = false;
+        urlHelper.NavigateTo(urlHelper.Uri, forceLoad: true);
     }
      async Task Consultar()
     {
         var resultado = await facturaServices.Consultar();
         if (resultado.Exitoso)
         {
-            Facturas = resultado.Datos??new List<FacturaRespose>();
+            Facturas = resultado.Datos?.OrderByDescending(f => f.Fecha).ToList() ?? new List<FacturaRespose>();
         }
         StateHasChanged();
     }

@@ -1,9 +1,8 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
-
-/* site.css */
-
-
+.card{
+    background-color: rgb(238, 238, 238);
+}
 .modal-content{
     background-color: white;
     color: black;

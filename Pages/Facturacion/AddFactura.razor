@@ -305,13 +305,14 @@
             {
                 Message = result.Mensaje;
                 // Reset the form after successful save
-                facturaRequest = new FacturaRequest();
-                detalleFacturaRequest = new FacturaDetalleRequest();
-                Pagado = false;
-                Chance = false;
-                Cobro = true;
-                MontoPagado = 0;
-                Cambio = 0;
+                //facturaRequest = new FacturaRequest();
+                //detalleFacturaRequest = new FacturaDetalleRequest();
+                //Pagado = false;
+                //Chance = false;
+                //Cobro = true;
+                //MontoPagado = 0;
+                //Cambio = 0;
+                urlHelper.NavigateTo("factura", true);
             }
             else
             {

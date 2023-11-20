@@ -11,7 +11,7 @@
     </div>
 
     <main>
-        <div class="top-row px-4 d-print-none" style="background-color: #0E2262;">
+        <div class="top-row px-4 d-print-none" style="background-color: rgb(12, 12, 12);">
             <AuthorizeView>
                 <Authorized>
                     <a class="nav-link active" style="color: white;">
@@ -24,13 +24,12 @@
             <AuthorizeView>
             <Authorized>
                 <a class="nav-link active" href="javascript:void(0)" style="color: white;" @onclick="Logout">
-                    <img src="cerrar-sesion.png" style="height: 20px; width: 20px; ">
-                    <span aria-hidden="true"></span> LogOut
+                    <span aria-hidden="true" class="oi oi-account-logout"></span> LogOut
                 </a>
             </Authorized>
             <NotAuthorized>
                 <a class="nav-link active" href="login" style="color: white;">
-                    LogIn
+                    <span class="oi oi-account-login"></span> LogIn
                 </a>
             </NotAuthorized>
           </AuthorizeView>
