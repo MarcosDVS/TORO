@@ -1,5 +1,5 @@
 @page "/usuarios"
-@attribute [Authorize(Roles = "Administrator,User")]
+@attribute [Authorize]
 <style>
     .table thead {
         background-color: black;
@@ -103,7 +103,6 @@
                             <option value="User">User</option>
                         </select>
                     </div>
-
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-outline-primary">Guardar</button>
                         <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
@@ -114,7 +113,7 @@
     }
     else
     {
-        <table class="table">
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Nombre</th>
@@ -134,12 +133,12 @@
                             <AuthorizeView Roles="Administrator">
                                 <Authorized>
                                     <button @onclick="()=>MostrarDetalles(item.Id)" 
-                                        class="btn btn-outline-primary">
+                                        class="btn btn-outline-info">
                                         <span class="oi oi-info"></span>
                                         Detalles
                                     </button>
                                     <button @onclick="()=>Seleccionar(item.Id)"
-                                        class="btn btn-outline-warning">
+                                        class="btn btn-outline-primary">
                                         <span class="oi oi-pencil"></span>
                                         Editar
                                     </button>
@@ -178,7 +177,6 @@
     // Add these properties to track the checkbox states and set the Role property accordingly
     private bool IsAdministrator { get; set; }
     private bool IsUser { get; set; }
-    public string confirmarClave { get; set; } = "";
 
     private void SetRole()
     {
@@ -257,12 +255,6 @@
         }
         else
         {
-            if (request.Clave != confirmarClave)
-            {
-                // Mostrar mensaje de error porque las claves no coinciden
-                ErrorMessage = "Las claves no concuerdan";
-                return;
-            }
             //Debo solicitar modificar el contacto...
             var r = await userServices.Modificar(request);
             if (r.Exitoso)
