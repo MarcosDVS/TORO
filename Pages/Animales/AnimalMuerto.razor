@@ -57,19 +57,18 @@
                 </div>
                 <div class="mb-3 input-group">
                     <label for="Raza" class="input-group-text">Raza</label>
-                    <input 
-                        class="form-control"
-                        placeholder="Raza"
-                        aria-label="Raza"
-                        aria-describedby="button-addon2" list="contactos"
-                        @bind="@request.Raza"
-                    />
-                    <datalist id="contactos">
-                        @foreach (var cliente in Razas)
+                    <select class="form-control" @bind="request.Raza">
+                        @if (Razas.Any())
                         {
-                            <option value="@cliente.Nombre"  />
+                            <option value="" disabled selected>Selecciona una raza</option>
+                            @foreach (var animal in Razas)
+                            {
+                                <option value="@animal.Nombre">
+                                    @animal.Nombre
+                                </option>
+                            }
                         }
-                    </datalist>
+                    </select>
                 </div>
                 <div class="mb-3 input-group">
                     <label for="Sexo" class="input-group-text">Sexo</label>

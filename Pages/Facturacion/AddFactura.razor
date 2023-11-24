@@ -50,7 +50,9 @@
             <div class="input-group d-print-none">
                 <label for="AnimalId" class="input-group-text">Animal:</label>
                 <select class="form-control" @bind="IdAnimal">
-                    <option disabled>Selecciona un animal</option>
+                @if (Animales.Any())
+                {
+                    <option value="" disabled selected>Selecciona un animal</option>
                     @foreach (var animal in Animales)
                     {
                         @if(!animal.Vendido)
@@ -60,8 +62,8 @@
                             </option>
                         }
                     }
+                }
                 </select>
-
             </div>
         </div>
         <div class="col-md-6">
