@@ -25,6 +25,8 @@ public class FacturaDetalleRequest
     public int AnimalId { get; set; }
     public string? Descripcion { get; set; }
     public int Cantidad { get; set; } = 1;
-    public decimal Precio { get; set; }
+    public decimal Kilo { get; set; }
+    public decimal PrecioKilo { get; set; } = 13500;
+    public decimal Precio { get; set; } 
     public decimal SubTotal => Cantidad * Precio;
 }

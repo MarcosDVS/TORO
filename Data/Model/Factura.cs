@@ -59,14 +59,20 @@ public class FacturaDetalle
     public int FacturaId { get; set; }
     public int AnimalId { get; set; }
     public int Cantidad { get; set; } = 1;
+    public decimal Kilo { get; set; }
+    public decimal PrecioKilo { get; set; } = 13500;
     [Column(TypeName = "decimal(18,2)")]
     public decimal Precio { get; set; }
-
+    [NotMapped]
+    public decimal SubTotal => Cantidad * Precio;
+    
     public static FacturaDetalle Crear(FacturaDetalleRequest request)
     => new()
     {
         AnimalId = request.AnimalId,
         Cantidad = request.Cantidad,
+        Kilo = request.Kilo,
+        PrecioKilo = request.PrecioKilo,
         Precio = request.Precio,
     };
 
@@ -78,14 +84,14 @@ public class FacturaDetalle
     public virtual Animal Animal { get; set; }
     #endregion
 
-    [NotMapped]
-    public decimal SubTotal => Cantidad * Precio;
     public FacturaDetalleResponse ToResponse()
         => new()
         {
             Id = Id,
             Animal = Animal.ToResponse(),
             Cantidad = Cantidad,
+            Kilo = Kilo,
+            PrecioKilo = PrecioKilo,
             Precio = Precio,
             FacturaId = FacturaId
         };

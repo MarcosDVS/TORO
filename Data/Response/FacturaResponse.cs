@@ -42,6 +42,8 @@ public class FacturaDetalleResponse
     public int FacturaId { get; set; }
     public AnimalResponse Animal { get; set; } = null!;
     public int Cantidad { get; set; } = 1;
+    public decimal Kilo { get; set; }
+    public decimal PrecioKilo { get; set; } = 13500;
     public decimal Precio { get; set; }
     [NotMapped]
     public decimal SubTotal => Cantidad * Precio;

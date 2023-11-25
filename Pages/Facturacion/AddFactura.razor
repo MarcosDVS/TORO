@@ -29,7 +29,7 @@
 <EditForm Model="facturaRequest" OnValidSubmit="Send">
     <DataAnnotationsValidator />
     <ValidationSummary />
-
+    <p><b>Nota:</b> Recuerda un quintal tiene 100 kilos</p>
     <div class="row mb-2">
         <div class="col-md-6 mb-2">
             <div class="input-group">
@@ -81,11 +81,17 @@
     <div class="row">
         <div class="col-md-6">
             <div class="input-group d-print-none">
-                <label for="PrecioVenta" class="input-group-text">Precio de Venta:</label>
-                <InputNumber @bind-Value="detalleFacturaRequest.Precio" id="PrecioVenta" class="form-control" />
+                <label for="PrecioVenta" class="input-group-text">Precio/quintal:</label>
+                <InputNumber @bind-Value="detalleFacturaRequest.PrecioKilo" id="PrecioVenta" class="form-control" />
             </div>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-6">
+            <div class="input-group d-print-none">
+                <label for="PrecioVenta" class="input-group-text">Kilos:</label>
+                <InputNumber @bind-Value="detalleFacturaRequest.Kilo" id="PrecioVenta" class="form-control" />
+            </div>
+        </div>
+        <div class="col-md-2 mt-2">
             <button class="btn btn-success d-print-none" type="button"
                 @onclick="AgregarAlDetalle">
                 <span class="oi oi-collapse-down"></span>
@@ -99,15 +105,17 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th class="col w-25">
+                <th>
                     Cantidad
                 </th>
                 <th>Descripcion</th>
-                <th class="col w-25">
+                <th>Costo/Quintal</th>
+                <th>Kilos</th>
+                <th>
                     ITBIS
                 </th>
-                <th class="col w-25">
-                    Precio
+                <th>
+                    Costo
                 </th>
                 <th>
                     ...
@@ -118,13 +126,17 @@
             @foreach (var detalle in facturaRequest.Detalles)
             {
                 <tr>
-                    <td class="col w-25 text-center">
-                        <InputNumber 
-                            class="form-control " 
-                            @bind-Value="@detalle.Cantidad" />
+                    <td class="col">
+                        @detalle.Cantidad
                     </td>
-                    <td class="col w-50">
+                    <td class="col w-25">
                         @detalle.Descripcion
+                    </td>
+                    <td class="col">
+                        @detalle.PrecioKilo
+                    </td>
+                    <td class="col">
+                        @detalle.Kilo.ToString("N2")
                     </td>
                     <td>
                         <span style="white-space: nowrap;">
@@ -132,8 +144,10 @@
                         </span>
                     </td>
 
-                    <td class="col w-25">
-                        @detalle.Precio.ToString("C2")
+                    <td class="col text-center">
+                        <InputNumber 
+                            class="form-control " 
+                            @bind-Value="@detalle.Precio" />
                     </td>
                     <td>
                         <button type="button" class="btn btn-outline-danger d-print-none"
@@ -148,7 +162,6 @@
     <div class="card mb-3 p-3">
         <h5 class="card-header"><b>Resumen</b></h5>
         <div class="card-body">
-            
             @if (Cobro)
             {
                 <label for=""><b>ITBIS:</b></label>
@@ -268,19 +281,30 @@
     void EliminarDetalle(int Id)
     {
         var detalle = facturaRequest.Detalles
-        .FirstOrDefault(d => d.AnimalId == Id);
+            .FirstOrDefault(d => d.AnimalId == Id);
+
         if (detalle != null)
         {
+            // Encuentra el animal correspondiente en la lista Animales
+            var animalCorrespondiente = Animales.FirstOrDefault(a => a.Id == detalle.AnimalId);
+
+            if (animalCorrespondiente != null)
+            {
+                // Actualiza la propiedad Vendido a false
+                animalCorrespondiente.Vendido = false;
+            }
+
             facturaRequest.Detalles.Remove(detalle);
         }
     }
+
     void AgregarAlDetalle()
     {
         var r = Animales?.FirstOrDefault(p => p.Id == IdAnimal);
 
         if (r != null)
         {
-            if (detalleFacturaRequest.Precio >= 15000) // Verifica el precio
+            if (detalleFacturaRequest.Kilo >= 100) // Verifica el precio
             {
                 var detalle = facturaRequest.Detalles.FirstOrDefault(d => d.AnimalId == IdAnimal);
 
@@ -294,14 +318,19 @@
                     {
                         AnimalId = IdAnimal,
                         Descripcion = r!.Arete + " " + r!.Raza + " " + r!.Sexo,
-                        Precio = detalleFacturaRequest.Precio,
+                        Kilo = detalleFacturaRequest.Kilo,
+                        PrecioKilo = detalleFacturaRequest.PrecioKilo,
+                        Precio = (detalleFacturaRequest.Kilo / 100) * detalleFacturaRequest.PrecioKilo,
                         Cantidad = Cantidad
                     });
+
+                    // Actualizar la propiedad Vendido del animal a true
+                    r.Vendido = true;
                 }
             }
             else
             {
-                Message = "El precio del animal debe ser de RD$15,000 o más";
+                Message = "No puedes vender un bovino de menos de 100 kilos";
             }
         }
     }

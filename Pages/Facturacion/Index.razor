@@ -72,46 +72,49 @@ else
     {
         <h5><b>Fecha:</b> @SelectedFactura.Fecha.ToShortDateString()</h5>
         <h5><b>Cliente:</b> @SelectedFactura.Cliente</h5>
-
-<!-- Mostrar detalles de la factura seleccionada -->
-<div class="table-responsive">
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th scope="col">Cantidad</th>
-                <th scope="col">Descripción</th>
-                <th scope="col">ITBIS</th>
-                <th scope="col">Precio</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var detalle in FacturaDetalles)
-            {
-                <tr>
-                    <td>@detalle.Cantidad</td>
-                    <td>@detalle.Animal.Arete @detalle.Animal.Raza @detalle.Animal.Sexo</td>
-                    <td>
-                        <span style="white-space: nowrap;">
-                            @($"{(detalle.Precio * 0.18m):C2}")
-                        </span>
-                    </td>
-                    <td>@detalle.Precio.ToString("C2")</td>
-                </tr>
-            }
-            <tr>
-                <td colspan="2"></td>
-                <td><b>ITBIS:</b></td>
-                <td>@FacturaDetalles.Sum(c => c.Precio * 0.18m).ToString("C2")</td>
-            </tr>
-            <tr>
-                <td colspan="2"></td>
-                <td><b>Total:</b></td>
-                <td>@FacturaDetalles.Sum(c => c.Precio).ToString("C2")</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
+        <p><b>Nota:</b>Recuerda un quintal tiene 100 kilos</p>
+        <!-- Mostrar detalles de la factura seleccionada -->
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Arete</th>
+                        <th scope="col">Descripción</th>
+                        <th scope="col">Costo/Quintal</th>
+                        <th scope="col">Kilos</th>
+                        <th scope="col">ITBIS</th>
+                        <th scope="col">Costo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in FacturaDetalles)
+                    {
+                        <tr>
+                            <td>@detalle.Animal.Arete</td>
+                            <td>@detalle.Animal.Raza @detalle.Animal.Sexo</td>
+                            <td>@detalle.PrecioKilo.ToString("C2")</td>
+                            <td>@detalle.Kilo.ToString("N2")</td>
+                            <td>
+                                <span style="white-space: nowrap;">
+                                    @($"{(detalle.Precio * 0.18m):C2}")
+                                </span>
+                            </td>
+                            <td>@detalle.Precio.ToString("C2")</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td colspan="4"></td>
+                        <td><b>ITBIS:</b></td>
+                        <td>@FacturaDetalles.Sum(c => c.Precio * 0.18m).ToString("C2")</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"></td>
+                        <td><b>Total:</b></td>
+                        <td>@FacturaDetalles.Sum(c => c.Precio).ToString("C2")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     }
     else if(Facturas != null)
     {
