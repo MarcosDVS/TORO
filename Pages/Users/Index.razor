@@ -255,24 +255,13 @@
         }
         else
         {
-            var existingUser = Users.FirstOrDefault(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
-            if (existingUser != null)
+            //Debo solicitar modificar el contacto...
+            var r = await userServices.Modificar(request);
+            if (r.Exitoso)
             {
-                // Mostrar mensaje de error porque el correo electrónico ya existe
-                // Aquí puedes establecer una variable de estado para mostrar el mensaje en tu interfaz de usuario
-                // Por ejemplo: 
-                Message = "El correo electrónico ya existe";
-            }
-            else
-            {
-                //Debo solicitar modificar el contacto...
-                var r = await userServices.Modificar(request);
-                if (r.Exitoso)
-                {
-                    Cancelar();
-                    await CargarUsuarios();
-                    StateHasChanged();
-                }
+                Cancelar();
+                await CargarUsuarios();
+                StateHasChanged();
             }
         }
     }
