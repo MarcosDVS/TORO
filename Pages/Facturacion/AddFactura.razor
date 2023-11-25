@@ -22,13 +22,13 @@
         </button>
     </div>
 </div>
-@if (!string.IsNullOrWhiteSpace(Message))
-{
-    <div class="alert alert-danger d-print-none" role="alert">@Message</div>
-}
 <EditForm Model="facturaRequest" OnValidSubmit="Send">
     <DataAnnotationsValidator />
     <ValidationSummary />
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <div class="alert alert-danger d-print-none" role="alert">@Message</div>
+    }
     <p><b>Nota:</b> Recuerda un quintal tiene 100 kilos</p>
     <div class="row mb-2">
         <div class="col-md-6 mb-2">

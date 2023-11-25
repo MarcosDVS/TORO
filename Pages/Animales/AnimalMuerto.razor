@@ -51,6 +51,12 @@
             <EditForm Model="request" OnValidSubmit="Send">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
+                @if (!string.IsNullOrEmpty(Message))
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @Message
+                    </div>
+                }
                 <div class="mb-3 input-group">
                     <label for="Arete" class="input-group-text">Arete</label>
                     <InputText id="Arete" class="form-control" @bind-Value="@request.Arete" />
@@ -196,6 +202,7 @@
     public LostAnimalResponse SelectCar { get; set; } = new LostAnimalResponse();
     public LostAnimalRequest request { get; set; } = new LostAnimalRequest();
     public LostAnimalResponse AnimalEnConfirmacion { get; set; } = new LostAnimalResponse();
+    public string Message { get; set; } = "";
     
     void MostrarConfirmacion(LostAnimalResponse animal)
     {

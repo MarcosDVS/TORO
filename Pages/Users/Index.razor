@@ -173,7 +173,7 @@
         = new List<UserResponse>();
     public UserResponse? SelectedUser { get; set; }
     public UserRequest request { get; set; } = new UserRequest();
-    public string ErrorMessage { get; set; } = "";
+    public string Message { get; set; } = "";
     // Add these properties to track the checkbox states and set the Role property accordingly
     private bool IsAdministrator { get; set; }
     private bool IsUser { get; set; }
@@ -255,13 +255,24 @@
         }
         else
         {
-            //Debo solicitar modificar el contacto...
-            var r = await userServices.Modificar(request);
-            if (r.Exitoso)
+            var existingUser = Users.FirstOrDefault(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
+            if (existingUser != null)
             {
-                Cancelar();
-                await CargarUsuarios();
-                StateHasChanged();
+                // Mostrar mensaje de error porque el correo electrónico ya existe
+                // Aquí puedes establecer una variable de estado para mostrar el mensaje en tu interfaz de usuario
+                // Por ejemplo: 
+                Message = "El correo electrónico ya existe";
+            }
+            else
+            {
+                //Debo solicitar modificar el contacto...
+                var r = await userServices.Modificar(request);
+                if (r.Exitoso)
+                {
+                    Cancelar();
+                    await CargarUsuarios();
+                    StateHasChanged();
+                }
             }
         }
     }

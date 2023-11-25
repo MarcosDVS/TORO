@@ -101,42 +101,25 @@ public class UserServices : IUserServices
             };
         }
     }
-    #endregion
-
-    public async Task<Result<User>> Login(string username, string password)
+    public async Task CrearUsuarioAdmin()
     {
-        try
-        {
-            var user = await _database.Users
-                .FirstOrDefaultAsync(u => u.Email == username && u.Clave == password);
+        var adminUser = await _database.Users.FirstOrDefaultAsync(u => u.Email == "admin");
 
-            if (user != null)
-            {
-                return new Result<User>
-                {
-                    Exitoso = true,
-                    Datos = user,
-                    Mensaje = "Inicio de sesión exitoso"
-                };
-            }
-            else
-            {
-                return new Result<User>
-                {
-                    Exitoso = false,
-                    Mensaje = "Credenciales de inicio de sesión incorrectas"
-                };
-            }
-        }
-        catch (Exception ex)
+        if (adminUser == null)
         {
-            return new Result<User>
+            adminUser = new User
             {
-                Exitoso = false,
-                Mensaje = $"Error en el inicio de sesión: {ex.Message}"
+                Nombre = "Admin",
+                Email = "admin",
+                Clave = "1234", // Recuerda realizar un hash de la contraseña en un entorno de producción
+                Role = "Administrator"
             };
+
+            _database.Users.Add(adminUser);
+            await _database.SaveChangesAsync();
         }
     }
+    #endregion
 
 }
 
@@ -147,5 +130,5 @@ public interface IUserServices
     Task<Result> Crear(UserRequest request);
     Task<Result> Eliminar(UserRequest request);
     Task<Result> Modificar(UserRequest request);
-    Task<Result<User>> Login(string username, string password);
+    Task CrearUsuarioAdmin();
 }

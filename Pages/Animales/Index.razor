@@ -60,10 +60,10 @@
                     <EditForm Model="reques" OnValidSubmit="Enviar">
                         <DataAnnotationsValidator/>
                         <ValidationSummary/>
-                        @if (!string.IsNullOrEmpty(ErrorMessage))
+                        @if (!string.IsNullOrEmpty(Message))
                         {
                             <div class="alert alert-danger" role="alert">
-                                @ErrorMessage
+                                @Message
                             </div>
                         }
                         <div class="input-group">
@@ -89,12 +89,12 @@
                 <EditForm Model="request" OnValidSubmit="Send">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
-                        @if (!string.IsNullOrEmpty(ErrorMessage))
-                        {
-                            <div class="alert alert-danger" role="alert">
-                                @ErrorMessage
-                            </div>
-                        }
+                    @if (!string.IsNullOrEmpty(Message))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @Message
+                        </div>
+                    }
                     <div class="mb-3 input-group">
                         <label for="Arete" class="input-group-text">Arete</label>
                         <InputText id="Arete" class="form-control" @bind-Value="@request.Arete" />
@@ -245,7 +245,7 @@
     public AnimalResponse SelectCar { get; set; } = new AnimalResponse();
     public AnimalResponse AnimalEnConfirmacion { get; set; } = new AnimalResponse();
     public AnimalRequest request { get; set; } = new AnimalRequest();
-    public string ErrorMessage { get; set; } = "";
+    public string Message { get; set; } = "";
     //Metodos Para los bovinos
     void MostrarConfirmacion(AnimalResponse animal)
     {
@@ -392,7 +392,7 @@
             }
             else
             {
-                ErrorMessage = "No se pudo agregar la raza";
+                Message = "No se pudo agregar la raza";
             }
         }
         else

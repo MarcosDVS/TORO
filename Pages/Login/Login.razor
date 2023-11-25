@@ -58,6 +58,14 @@
         public string Password { get; set; }
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        // Llamada a CrearUsuarioAdmin antes de intentar autenticar
+        await userServices.CrearUsuarioAdmin();
+        
+        // Resto de tu código OnInitializedAsync
+    }
+
     private async Task Authenticate()
     {
         if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
@@ -84,7 +92,7 @@
         }
         
     }
-
+    
     void CrearUsuario()
     {
         urlHelper.NavigateTo("/usuario/crear", true);

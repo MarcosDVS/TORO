@@ -19,15 +19,15 @@
                 </div>
                 <div class="mb-3 input-group">
                     <label for="Usuario" class="input-group-text">Usuario</label>
-                    <InputText id="Usuario" type="email" class="form-control" @bind-Value="@request.Email" />
+                    <InputText id="Usuario" class="form-control" @bind-Value="@request.Email" />
                 </div>
                 <div class="mb-3 input-group">
                     <label for="Clave" class="input-group-text">Clave</label>
-                    <InputText id="Clave" type="password" class="form-control" @bind-Value="@request.Clave" />
+                    <InputText id="Clave" class="form-control" @bind-Value="@request.Clave" />
                 </div>
                 <div class="mb-3 input-group">
                     <label for="ConfirmarClave" class="input-group-text">Confirmar Clave</label>
-                    <InputText id="ConfirmarClave" type="password" class="form-control" @bind-Value="@confirmarClave" />
+                    <InputText id="ConfirmarClave" class="form-control" @bind-Value="@confirmarClave" />
                 </div>
 
                 <div class="d-grid gap-2">
@@ -36,10 +36,10 @@
                 </div>
             </EditForm>
         </div>
-        <!-- Luego, en tu formulario, puedes mostrar ErrorMessage cuando sea necesario -->
-        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+        <!-- Luego, en tu formulario, puedes mostrar Message cuando sea necesario -->
+        @if (!string.IsNullOrWhiteSpace(Message))
         {
-            <div class="alert alert-danger" role="alert">@ErrorMessage</div>
+            <div class="alert alert-danger" role="alert">@Message</div>
         }
 </div>
 
@@ -51,7 +51,7 @@
     public UserRequest request { get; set; } = new UserRequest();
     public string confirmarClave { get; set; } = "";
 
-    public string ErrorMessage { get; set; } = "";
+    public string Message { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,29 +77,18 @@
                 // Mostrar mensaje de error porque el correo electrónico ya existe
                 // Aquí puedes establecer una variable de estado para mostrar el mensaje en tu interfaz de usuario
                 // Por ejemplo: 
-                ErrorMessage = "Patron el correo electrónico ya existe 🤨";
+                Message = "Patron el correo electrónico ya existe 🤨";
             }
             else
             {
                 if (request.Clave != confirmarClave)
                 {
                     // Mostrar mensaje de error porque las claves no coinciden
-                    ErrorMessage = "Las claves no concuerdan";
+                    Message = "Las claves no concuerdan";
                     return;
                 }
-                // Verificar si ya existen usuarios en la base de datos
-                var hasExistingUsers = Users.Any();
-
-                if (hasExistingUsers)
-                {
-                    // Si ya existen usuarios, establece Role en "User"
-                    request.Role = "User";
-                }
-                else
-                {
-                    // Si no existen usuarios, establece Role en "Administrator"
-                    request.Role = "Administrator";
-                }
+                
+                request.Role = "User";
 
                 // Debo registrar el contacto.
                 var r = await userServices.Crear(request);
