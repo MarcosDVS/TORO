@@ -112,6 +112,10 @@
                                     </option>
                                 }
                             }
+                            else
+                            {
+                                <option value="" disabled selected>No hay razas disponibles</option>
+                            }
                         </select>
                         <button class="btn btn-outline-primary d-print-none" type="button" @onclick='()=>{urlHelper.NavigateTo("/Raza", true);}'>
                             <span class="oi oi-info"></span>

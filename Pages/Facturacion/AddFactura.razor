@@ -50,19 +50,23 @@
             <div class="input-group d-print-none">
                 <label for="AnimalId" class="input-group-text">Animal:</label>
                 <select class="form-control" @bind="IdAnimal">
-                @if (Animales.Any())
-                {
-                    <option value="" disabled selected>Selecciona un animal</option>
-                    @foreach (var animal in Animales)
+                    @if (Animales.Any())
                     {
-                        @if(!animal.Vendido)
+                        <option value="" disabled selected>Selecciona un animal</option>
+                        @foreach (var animal in Animales)
                         {
-                            <option value="@animal.Id">
-                                @animal.Arete @animal.Raza @animal.Sexo
-                            </option>
+                            @if(!animal.Vendido)
+                            {
+                                <option value="@animal.Id">
+                                    @animal.Arete @animal.Raza @animal.Sexo
+                                </option>
+                            }
                         }
                     }
-                }
+                    else
+                    {
+                        <option value="" disabled selected>No hay animales disponibles</option>
+                    }
                 </select>
             </div>
         </div>
