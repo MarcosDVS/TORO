@@ -249,11 +249,12 @@
     public string Message { get; set; } = "";
 
     //Metodos Para confirmar las perdidas
-    void ShowQuestion(AnimalResponse animal)
+    void ShowQuestion(AnimalResponse selectedAnimal)
     {
         ShowConfirmation = true;
-        animal = animal;
+        animal = selectedAnimal; // Usa la variable de instancia en lugar de declarar una nueva.
     }
+
     void CancelarConfirmacion()
     {
         ShowConfirmation = false;

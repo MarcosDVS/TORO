@@ -271,11 +271,6 @@
     {
         await CargarProducto();
         
-        // Verifica si hay al menos un animal disponible
-        if (Animales.Count > 0)
-        {
-            IdAnimal = Animales[0].Id; // Inicializa con el primer animal en la lista
-        }
     }
 
     void EliminarDetalle(int Id)
