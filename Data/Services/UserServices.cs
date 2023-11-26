@@ -122,7 +122,7 @@ public class UserServices : IUserServices
                 Nombre = "ADMIN",
                 Apellido = "TORO",
                 Email = "admin",
-                Clave = "1234", // Recuerda realizar un hash de la contraseña en un entorno de producción
+                Clave = HashPassword("1234"), // Recuerda realizar un hash de la contraseña en un entorno de producción
                 Role = "Administrator"
             };
 
