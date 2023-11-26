@@ -88,10 +88,6 @@
                         <label for="Usuario" class="input-group-text">Usuario</label>
                         <InputText id="Usuario" class="form-control" @bind-Value="@request.Email" />
                     </div>
-                    <div class="mb-3 input-group">
-                        <label for="Clave" class="input-group-text">Clave</label>
-                        <InputText id="Clave" type="password" class="form-control" @bind-Value="@request.Clave" />
-                    </div>
                     <!-- Add select for Administrator and User roles -->
                     <div class="mb-3 input-group">
                         <label class="input-group-text" for="chkAdministrator">Role</label>
@@ -103,7 +99,7 @@
                     </div>
                     <div class="mb-3 input-group">
                         <label for="NuevaClave" class="input-group-text">Nueva Clave</label>
-                        <InputText id="NuevaClave" type="password" class="form-control" @bind-Value="@nuevaClave" />
+                        <InputText id="NuevaClave" class="form-control" @bind-Value="@nuevaClave" />
                     </div>
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-outline-primary">Guardar</button>
