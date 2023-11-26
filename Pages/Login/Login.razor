@@ -75,7 +75,7 @@
         else
         {
             var userAccount = userAccountService.GetByUserName(model.UserName);
-            if(userAccount == null || userAccount.Clave != model.Password)
+            if (userAccount == null || !VerifyPassword(model.Password, userAccount.Clave))
             {
                 mensajeError = "Las Credenciales Son Incorrectas 😒❌";
                 return;
@@ -85,14 +85,18 @@
             await customAuthStateProvider.UpdateAuthenticationState(new UserSession
                 {
                     UserName = userAccount.Email,
-                    Name = userAccount.Nombre+" "+userAccount.Apellido,
+                    Name = userAccount.Nombre + " " + userAccount.Apellido,
                     Role = userAccount.Role
                 });
             urlHelper.NavigateTo("/", true);
         }
-        
     }
-    
+
+    private bool VerifyPassword(string enteredPassword, string hashedPassword)
+    {
+        // Utiliza BCrypt.Net para verificar si la contraseña coincide con el hash
+        return BCrypt.Net.BCrypt.Verify(enteredPassword, hashedPassword);
+    }
     void CrearUsuario()
     {
         urlHelper.NavigateTo("/usuario/crear", true);

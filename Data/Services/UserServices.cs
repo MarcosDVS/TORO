@@ -23,13 +23,16 @@ public class UserServices : IUserServices
         try
         {
             var contacto = User.Crear(request);
+
+            // Hash de la contraseña antes de almacenarla
+            contacto.Clave = HashPassword(request.Clave);
+
             _database.Users.Add(contacto);
             await _database.SaveChangesAsync();
             return new Result() { Mensaje = "Ok", Exitoso = true };
         }
         catch (Exception E)
         {
-
             return new Result() { Mensaje = E.Message, Exitoso = false };
         }
     }
@@ -40,7 +43,10 @@ public class UserServices : IUserServices
             var user = await _database.Users
                 .FirstOrDefaultAsync(c => c.Id == request.Id);
             if (user == null)
-                return new Result() { Mensaje = "No se encontro el gasto", Exitoso = false };
+                return new Result() { Mensaje = "No se encontró el usuario", Exitoso = false };
+
+            // Hash de la nueva contraseña antes de almacenarla
+            user.Clave = HashPassword(request.Clave);
 
             if (user.Modificar(request))
                 await _database.SaveChangesAsync();
@@ -49,9 +55,13 @@ public class UserServices : IUserServices
         }
         catch (Exception E)
         {
-
             return new Result() { Mensaje = E.Message, Exitoso = false };
         }
+    }
+    private string HashPassword(string password)
+    {
+        // Genera un hash seguro utilizando bcrypt
+        return BCrypt.Net.BCrypt.HashPassword(password);
     }
     public async Task<Result> Eliminar(UserRequest request)
     {

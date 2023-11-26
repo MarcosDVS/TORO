@@ -50,8 +50,6 @@
                     <p class="card-text">
                         <b>Usuario:</b> @SelectedUser.Email
                         <br>
-                        <b>Clave:</b> @SelectedUser.Clave
-                        <br>
                         <b>Role:</b> @SelectedUser.Role
                     </p>
                     <button @onclick="()=>Editar(SelectedUser)" class="btn btn-outline-primary">
@@ -103,9 +101,20 @@
                             <option value="User">User</option>
                         </select>
                     </div>
+                    <div class="mb-3 input-group">
+                        <label for="NuevaClave" class="input-group-text">Nueva Clave</label>
+                        <InputText id="NuevaClave" type="password" class="form-control" @bind-Value="@nuevaClave" />
+                    </div>
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-outline-primary">Guardar</button>
                         <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
+                        @if (request.Id != 0)
+                        {
+                            <button @onclick="CambiarClave" class="btn btn-outline-warning">
+                                <span class="oi oi-lock-locked"></span>
+                                Cambiar Clave
+                            </button>
+                        }
                     </div>
                 </EditForm>
             </div>
@@ -166,17 +175,38 @@
     public string TituloForm => request.Id == 0 ?
     "Agregar usuario" : "Modificar usuario";
 
+    public List<UserResponse> Users { get; set; } = new();
+    public UserRequest request { get; set; } = new();
+    public UserResponse? SelectedUser { get; set; }
+    private bool IsAdministrator { get; set; }
+    private bool IsUser { get; set; }
     public bool ShowForm { get; set; } = false;
     public bool ShowDetails { get; set; } = false;
     public string Filtro { get; set; } = "";
-    public List<UserResponse> Users { get; set; }
-        = new List<UserResponse>();
-    public UserResponse? SelectedUser { get; set; }
-    public UserRequest request { get; set; } = new UserRequest();
+    private string nuevaClave = "";
     public string Message { get; set; } = "";
-    // Add these properties to track the checkbox states and set the Role property accordingly
-    private bool IsAdministrator { get; set; }
-    private bool IsUser { get; set; }
+
+    private async Task CambiarClave()
+    {
+        if (!string.IsNullOrWhiteSpace(nuevaClave))
+        {
+            // Hashear la nueva contraseña antes de guardarla
+            request.Clave = BCrypt.Net.BCrypt.HashPassword(nuevaClave);
+            var resultado = await userServices.Modificar(request);
+
+            if (resultado.Exitoso)
+            {
+                nuevaClave = ""; // Limpiar el campo de nueva clave después de cambiarla
+                await CargarUsuarios();
+                StateHasChanged();
+                Cancelar();
+            }
+            else
+            {
+                Message = "Error al cambiar la contraseña";
+            }
+        }
+    }
 
     private void SetRole()
     {
