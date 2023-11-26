@@ -175,9 +175,10 @@ else
     public string TituloForm => ShowDetails == false ?
     "Reporte de facturaciones" : "Módulo de facturación";
     public bool ShowDetails { get; set; } = false;
-    public List<FacturaRespose> Facturas { get; set; } = new List<FacturaRespose>();
-    public List<FacturaDetalleResponse> FacturaDetalles { get; set; } = new List<FacturaDetalleResponse>();
+    public List<FacturaRespose> Facturas { get; set; } = new();
+    public List<FacturaDetalleResponse> FacturaDetalles { get; set; } = new();
     public FacturaRespose? SelectedFactura { get; set; } // Factura seleccionada
+    
     public async Task BuscarFacturas()
     {
         var resultado = await facturaServices.BuscarFacturas(clienteFiltro, fechaFiltro);

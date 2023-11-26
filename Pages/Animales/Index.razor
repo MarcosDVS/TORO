@@ -152,7 +152,7 @@
     }
     else
     {
-        @if (MostrarConfirmacio)
+        @if (ShowConfirmation)
         {
             <div class="modal" tabindex="-1" role="dialog" style="display: block; background-color: rgba(0, 0, 0, 0.5);">
                 <div class="modal-dialog" role="document">
@@ -162,7 +162,7 @@
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-outline-success"
-                                @onclick="ConfirmarPerdido" >
+                                @onclick="Confirmar" >
                                 <span class="oi oi-check"></span> Sí
                             </button>
                             <button class="btn btn-outline-danger"
@@ -200,7 +200,7 @@
                                 <AuthorizeView Roles="Administrator">
                                     <Authorized>
                                         <div class="button d-print-none">
-                                            <button @onclick="()=>MostrarConfirmacion(item)"
+                                            <button @onclick="()=>ShowQuestion(item)"
                                                 class="btn btn-outline-dark">
                                                 <span class="oi oi-thumb-down"></span>
                                                 Perdido
@@ -235,44 +235,70 @@
     public string TituloForm => request.Id == 0 ?
     "Agregar bovino" : "Modificar bovino";
     
+    public AnimalRequest request { get; set; } = new();
+    public LostAnimalRequest requestLostAnimal { get; set; } = new();
+    public RazaRequest reques { get; set; } = new();
+    public List<RazaResponse> Razas { get; set; } = new();
+    public List<AnimalResponse> Animales { get; set; } = new();
+    public AnimalResponse SelectCar { get; set; } = new();
+    public AnimalResponse animal { get; set; } = new();
     public bool ShowForm { get; set; } = false;
     public bool Form { get; set; } = false;
-    public bool MostrarConfirmacio { get; set; } = false;
-    public string Filtro { get; set; } = "";
-    public List<RazaResponse> Razas { get; set; } = new List<RazaResponse>();
-    public RazaRequest reques { get; set; } = new RazaRequest();
-    public List<AnimalResponse> Animales { get; set; } = new List<AnimalResponse>();
-    public AnimalResponse SelectCar { get; set; } = new AnimalResponse();
-    public AnimalResponse AnimalEnConfirmacion { get; set; } = new AnimalResponse();
-    public AnimalRequest request { get; set; } = new AnimalRequest();
+    public bool ShowConfirmation { get; set; } = false;
+    public string Filtro { get; set; } = ""; 
     public string Message { get; set; } = "";
-    //Metodos Para los bovinos
-    void MostrarConfirmacion(AnimalResponse animal)
+
+    //Metodos Para confirmar las perdidas
+    void ShowQuestion(AnimalResponse animal)
     {
-        MostrarConfirmacio = true;
-        AnimalEnConfirmacion = animal;
+        ShowConfirmation = true;
+        animal = animal;
     }
     void CancelarConfirmacion()
     {
-        MostrarConfirmacio = false;
+        ShowConfirmation = false;
     }
-    void Cancelar()
+    async Task Confirmar()
     {
-        request = new AnimalRequest();
-        ShowForm = false;
-        // Recargar la página actual
-        urlHelper.NavigateTo(urlHelper.Uri, forceLoad: true);
+        // Crear un objeto LostAnimalRequest a partir de AnimalRequest
+        var lostAnimalRequest = new LostAnimalRequest
+        {
+            Id = animal.Id,
+            Arete = animal.Arete,
+            Raza = animal.Raza,
+            Sexo = animal.Sexo,
+            CostoCompra = animal.CostoCompra,
+            FechaNacimiento = animal.FechaNacimiento,
+            FechaMuerte = DateTime.Now // Ajusta la fecha de muerte según sea necesario
+        };
+
+        // Realiza una llamada al servidor para marcar el animal como perdido en la entidad LostAnimal.
+        var resultado = await lostAnimalServices.Crear(lostAnimalRequest);
+        
+        if (resultado.Exitoso)
+        {
+            // Luego, elimina el animal de la entidad Animal.
+            var eliminacionExitosa = await animalServices.Eliminar(animal.ToRequest());
+            
+            if (eliminacionExitosa.Exitoso)
+            {
+                ShowConfirmation = false;
+                await CargarInfo(); // Actualiza la lista de animales después de los cambios en el servidor.
+            }
+        }
+    }
+    
+    //Metodos para cargar los datos
+    protected async override Task OnInitializedAsync()
+    {
+        await Consultar();
+        await CargarRaza();
     }
     async Task CargarInfo()
     {
         var resultado = await animalServices.Consultar(Filtro);
         if (resultado.Exitoso)
             Animales = resultado.Datos!;
-    }
-    protected async override Task OnInitializedAsync()
-    {
-        await Consultar();
-        await CargarRaza();
     }
     public async Task<bool> Consultar()
     {
@@ -281,6 +307,8 @@
             Animales = response.Datos!;
         return true;
     }
+    
+    //Metodos para editar y elimar los bovinos
     public async Task Eliminar(AnimalResponse user)
     {
         var resultado = await animalServices.Eliminar(user.ToRequest());
@@ -305,18 +333,34 @@
             // Asegúrate de que las propiedades del modelo request se asignen correctamente
         }
     }
-    //Este metodo es para el formulario de los bovinos
+    
+    //Estos metodos son para el formulario de los bovinos
+    void Cancelar()
+    {
+        request = new AnimalRequest();
+        ShowForm = false;
+        // Recargar la página actual
+        urlHelper.NavigateTo(urlHelper.Uri, forceLoad: true);
+    }
     public async Task Send()
     {
         if (request.Id == 0 )
         {
-            //Debo registrar el contacto..
-            var r = await animalServices.Registrar(request);
-            if (r.Exitoso)
+            // Verificar si el arete electrónico ya existe en la base de datos
+            var existingUser = Animales.FirstOrDefault(u => u.Arete.Equals(request.Arete, StringComparison.OrdinalIgnoreCase) && !u.Vendido);
+            if (existingUser != null)
             {
-                Cancelar();
-                await CargarInfo();
-                StateHasChanged();
+                Message = "Patron ya existe un animal con este arete 🤨";
+            }
+            else
+            {
+                var r = await animalServices.Registrar(request);
+                if (r.Exitoso)
+                {
+                    Cancelar();
+                    await CargarInfo();
+                    StateHasChanged();
+                }
             }
         }
         else
@@ -331,39 +375,12 @@
             }
         }
     }
-    async Task ConfirmarPerdido()
-    {
-        // Crear un objeto LostAnimalRequest a partir de AnimalRequest
-        var lostAnimalRequest = new LostAnimalRequest
-        {
-            Id = AnimalEnConfirmacion.Id,
-            Arete = AnimalEnConfirmacion.Arete,
-            Raza = AnimalEnConfirmacion.Raza,
-            Sexo = AnimalEnConfirmacion.Sexo,
-            CostoCompra = AnimalEnConfirmacion.CostoCompra,
-            FechaNacimiento = AnimalEnConfirmacion.FechaNacimiento,
-            FechaMuerte = DateTime.Now // Ajusta la fecha de muerte según sea necesario
-        };
-
-        // Realiza una llamada al servidor para marcar el animal como perdido en la entidad LostAnimal.
-        var resultado = await lostAnimalServices.Crear(lostAnimalRequest);
-        
-        if (resultado.Exitoso)
-        {
-            // Luego, elimina el animal de la entidad Animal.
-            var eliminacionExitosa = await animalServices.Eliminar(AnimalEnConfirmacion.ToRequest());
-            
-            if (eliminacionExitosa.Exitoso)
-            {
-                MostrarConfirmacio = false;
-                await CargarInfo(); // Actualiza la lista de animales después de los cambios en el servidor.
-            }
-        }
-    }
     void Formulario()
     {
-        urlHelper.NavigateTo("add/bovino");
+        ShowForm = true;
+        //urlHelper.NavigateTo("add/bovino");
     }
+
     //Metodos para la Raza
     async Task CargarRaza()
     { 
@@ -411,9 +428,11 @@
     {
         Form = true;
     }
+    
+    
+    // Llama a la función JavaScript para imprimir la página
     private async Task PrintPageAsync()
     {
-        // Llama a la función JavaScript para imprimir la página
         await JSRuntime.InvokeVoidAsync("printPage");
     }
 }
