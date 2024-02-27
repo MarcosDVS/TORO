@@ -1,5 +1,6 @@
-﻿@page "/"
+﻿@page "/main"
 @using System.Security.Claims
+@attribute [Authorize(Roles = "Administrator,User")]
 
 <div class="hacienda-page">
     <header>
@@ -11,11 +12,8 @@
             <Authorized>
                 <h3 class="welcome-message">Hello, @context.User.FindFirstValue(ClaimTypes.GivenName)</h3>
             </Authorized>
-            <NotAuthorized>
-                <h3 class="welcome-message">Hello, Guest!</h3>
-            </NotAuthorized>
         </AuthorizeView>
-        <img src="c.png" alt="" style="height: 250px;" class="img-circle">
+        <img src="c.png" alt="" style="height: 250px;" class="img-circle rounded">
     </div>
 </div>
 

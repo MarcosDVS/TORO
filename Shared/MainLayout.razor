@@ -6,9 +6,13 @@
 <PageTitle>TORO</PageTitle>
 
 <div class="page">
-    <div class="sidebar d-print-none" >
-        <NavMenu />
-    </div>
+    <AuthorizeView>
+            <Authorized>
+                <div class="sidebar d-print-none" >
+                    <NavMenu />
+                </div>
+            </Authorized>
+    </AuthorizeView>
 
     <main>
         <div class="top-row px-4 d-print-none" style="background-color: rgb(12, 12, 12);">
@@ -27,11 +31,6 @@
                     <span aria-hidden="true" class="oi oi-account-logout"></span> LogOut
                 </a>
             </Authorized>
-            <NotAuthorized>
-                <a class="nav-link active" href="login" style="color: white;">
-                    <span class="oi oi-account-login"></span> LogIn
-                </a>
-            </NotAuthorized>
           </AuthorizeView>
         </div>
         <article class="content px-4">
@@ -47,9 +46,5 @@
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         await customAuthStateProvider.UpdateAuthenticationState(null);
         urlHelper.NavigateTo("/", true);
-    }
-    private async Task LogIn()
-    {
-        urlHelper.NavigateTo("/login", true);
     }
 }

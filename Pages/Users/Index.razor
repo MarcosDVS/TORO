@@ -102,14 +102,19 @@
                         <InputText id="NuevaClave" class="form-control" @bind-Value="@nuevaClave" />
                     </div>
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-outline-primary">Guardar</button>
-                        <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
+                        
                         @if (request.Id != 0)
                         {
-                            <button @onclick="CambiarClave" class="btn btn-outline-warning">
+                            <button @onclick="CambiarClave" type="submit" class="btn btn-outline-warning">
                                 <span class="oi oi-lock-locked"></span>
                                 Cambiar Clave
                             </button>
+                            <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                            <button @onclick="Cancelar" class="btn btn-outline-secondary">Cancelar</button>
                         }
                     </div>
                 </EditForm>
@@ -142,7 +147,7 @@
                                         <span class="oi oi-info"></span>
                                         Detalles
                                     </button>
-                                    <button @onclick="()=>Seleccionar(item.Id)"
+                                    <button @onclick="()=>Seleccionar(item)"
                                         class="btn btn-outline-primary">
                                         <span class="oi oi-pencil"></span>
                                         Editar
@@ -302,14 +307,18 @@
         }
     }
 
-    public void Seleccionar(int Id)
+    public void Seleccionar(UserResponse user)
     {
         ShowForm = true;
         ShowDetails = false;
-        request = Users
-        .Where(c => c.Id == Id)
-        .Select(c => c.ToRequest())
-        .FirstOrDefault() ?? new UserRequest();
+        request = new UserRequest
+            {
+                Id = user.Id,
+                Nombre = user.Nombre,
+                Apellido = user.Apellido,
+                Email = user.Email,
+                Clave = user.Clave
+            };
     }
     void Formulario()
     {
