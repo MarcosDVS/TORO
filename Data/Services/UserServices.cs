@@ -24,9 +24,6 @@ public class UserServices : IUserServices
         {
             var contacto = User.Crear(request);
 
-            // Hash de la contraseña antes de almacenarla
-            contacto.Clave = HashPassword(request.Clave);
-
             _database.Users.Add(contacto);
             await _database.SaveChangesAsync();
             return new Result() { Mensaje = "Ok", Exitoso = true };
@@ -45,8 +42,6 @@ public class UserServices : IUserServices
             if (user == null)
                 return new Result() { Mensaje = "No se encontró el usuario", Exitoso = false };
 
-            // Hash de la nueva contraseña antes de almacenarla
-            user.Clave = HashPassword(request.Clave);
 
             if (user.Modificar(request))
                 await _database.SaveChangesAsync();
@@ -122,7 +117,7 @@ public class UserServices : IUserServices
                 Nombre = "ADMIN",
                 Apellido = "TORO",
                 Email = "admin",
-                Clave = HashPassword("1234"), // Recuerda realizar un hash de la contraseña en un entorno de producción
+                Clave = "1234", // Recuerda realizar un hash de la contraseña en un entorno de producción
                 Role = "Administrator"
             };
 
