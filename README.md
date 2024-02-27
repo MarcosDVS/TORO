@@ -1,6 +1,6 @@
 # TORO
 
-**Note: if you want to uses this app you will need this Email: admin Passwork: 1234**
+**Note: if you want to uses this app you will need this, Email: admin Passwork: 1234**
 
 **Software Version: 1.0**
 **Developers:**
